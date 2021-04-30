@@ -49,7 +49,10 @@ export default class hero extends HeroBase {
         for(let i = 0; i < this.map.emety_list.length; i++)
         {
             emety = this.map.emety_list[i]
-            break
+            if(emety.getComponent("enemy").is_die == false)
+            {
+                break
+            }
         }
         if(emety && emety.getComponent("enemy").is_die == false)
         {
@@ -69,7 +72,7 @@ export default class hero extends HeroBase {
         {
             return
         }
-        target.getComponent("enemy").on_hit_base(this.attack_num)
+        
         
         this.is_can_attack = false
         let self = this
@@ -88,28 +91,35 @@ export default class hero extends HeroBase {
 
     create_one_bullet(target:cc.Node)
     {
-        cc.loader.loadRes('Prefab/bullet', cc.Prefab, ((errorMessage, loadedResource)=>{
+        cc.resources.load("Prefab/bullet", cc.Prefab, ((errorMessage, loadedResource)=>{
             if( !( loadedResource instanceof cc.Prefab ) ) { cc.log( 'Prefab error', errorMessage, loadedResource); return; } 
             var bullet = cc.instantiate( loadedResource );
             target.addChild( bullet );
+            
             let pos = this.node.getPosition()
             let wpos = this.node.parent.convertToWorldSpaceAR(pos)
             let bulletPos = target.convertToNodeSpaceAR(wpos)
+
+            let bullets = bullet.getComponent("bullet")
+            bullets.setAngleWithPos(bulletPos, cc.v2(0, 0))
+
             // bullet.position = bulletPos
             bullet.x = bulletPos.x
-            bullet.y = bulletPos.y
+            bullet.y = bulletPos.y  
 
+            
+            let movetime = 0.3
             cc.tween(bullet).sequence(
-                cc.tween(bullet).to(2.1, {
+                cc.tween(bullet).to(movetime, {
                     x:0,
                     y:0
                 }),
                 cc.tween(bullet).call(function(){
+                    target.getComponent("enemy").on_hit_base(this.attack_num)
                     bullet.removeFromParent()
-                }.bind(bullet))
+                }.bind(this))
             ).start()
-
-        }).bind(this) )
+        }).bind(this))
 
     }
     on_hit(hit_number:number){

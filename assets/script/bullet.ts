@@ -13,8 +13,8 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class NewClass extends cc.Component {
 
-    @property(cc.Sprite)
-    bullet: cc.Sprite = null;
+    // @property(cc.Sprite)
+    // bullet: cc.Sprite = null;
 
     // @property
     // text: string = 'hello';
@@ -25,14 +25,18 @@ export default class NewClass extends cc.Component {
 
     setAngle(_angle:number)
     {   
-        this.bullet.node.rotation = _angle
+        this.node.angle =  _angle
+    }
+
+    setAngleWithPos(pos:cc.Vec2, endpos:cc.Vec2)
+    {        
+        let angle = calc_angle(pos, endpos)
+        this.setAngle(angle)
     }
 
     actionMove(pos:cc.Vec2, endpos:cc.Vec2)
     {
-        let angle = calc_angle(pos, endpos)
-
-        this.setAngle(angle)
+        this.setAngleWithPos(pos, endpos)
         this.node.setPosition(pos)
         // 移动过去
         cc.tween(this.node).to(2, {

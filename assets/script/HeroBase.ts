@@ -66,6 +66,10 @@ export default class HeroBase extends cc.Component
     // 受击
     on_hit_base(hit_number:number)
     {
+        if(this.is_die)
+        {
+            return 
+        }
         hit_number -= this.defense_num
         hit_number = hit_number < 0? 0 : hit_number
         this.blood -= hit_number

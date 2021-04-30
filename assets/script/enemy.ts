@@ -18,12 +18,13 @@ export default class enemy extends HeroBase {
     blood_volume:cc.Label = null;
 
     onLoad () {
-        //血量
-        this.blood_volume.string = String(this.blood_num)
+
     }
 
     start() {
         // this.attack_num
+        //血量
+        this.blood_volume.string = String(this.blood_num)
     }
 
     on_hit(hit_number:number){
@@ -34,5 +35,7 @@ export default class enemy extends HeroBase {
     }
     on_die(){
         cc.log("enemy:on_die")
+
+        this.node.removeFromParent()
     }
 }
