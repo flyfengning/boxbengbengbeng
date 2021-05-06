@@ -10,7 +10,7 @@ function courseAngle(p1, p2) {
     //     bearing = bearing + 360;
     // }
     var angle: number  = Math.atan2( (p2.y-p1.y), (p2.x-p1.x)) 
-    var theta: number  = angle*( 180 /Math.PI); 
+    var theta: number  = angle * (180 / Math.PI); 
 
     return Math.round(theta);
 }

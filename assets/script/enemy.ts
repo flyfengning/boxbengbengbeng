@@ -34,8 +34,7 @@ export default class enemy extends HeroBase {
         cc.log("enemy:on_blood_back")
     }
     on_die(){
-        cc.log("enemy:on_die")
-
+        cc.log("enemy:on_die", this.name)
         this.node.removeFromParent()
     }
 }

@@ -32,52 +32,88 @@ export default class NewClass extends cc.Component {
 
     public emety_list:Array<cc.Node> = []
 
+    public map_list:Array<cc.Node> = []
+
     start () {
+        for(let i = 0; i <= 10; i++)
+        {
+            let mapNode = this.map_bg.node.getChildByName("f" + i)  
+            this.map_list.push(mapNode)
+            if (i % 2 == 0)
+            {
+                mapNode.opacity = 120
+            }
+        }
+        // this.addOneEnemy(1002, cc.v3(150, 100, 0))
+        // this.addOneEnemy(1001, cc.v3(50, 100, 0))
+        for(let i = 0; i < 5; i++)
+        {
+            this.addOneEnemy(1001, cc.v3(0, 0, 0))
+        }
 
-        this.addOneEnemy(cc.v3(50, 100, 0))
-
-        this.addOneEnemy(cc.v3(150, 100, 0))
-
-        this.addOneHero(cc.v3(100, -100, 0))
-
-        this.addOneHero(cc.v3(0, -100, 0))
-
-
-        
+        this.addOneHero(2001, cc.v3(100, -100, 0))
+        this.addOneHero(2002, cc.v3(0, -100, 0))
+        this.sequence_move()
     }
 
-    addOneEnemy(pos?:cc.Vec3)
+    addOneEnemy(id:number, pos?:cc.Vec3)
     {
         let emety1 = cc.instantiate(this.emety)
         emety1.parent = this.map_bg.node
         this.emety_list.push(emety1)
-        // blood血量  attack攻击力 defense防御力 attack_speed攻击速度
+
+        emety1.zIndex = 20
+
         let sc = emety1.getComponent("enemy")
         emety1.position = pos == null?cc.v3(150, 100, 0):pos
-        sc.resetHero(10000, 1, 10, 0)
+        emety1.active = false
 
-        cc.tween(emety1)
-            .sequence(
-                cc.tween(emety1).by(5, {x:-150}),
-                cc.tween(emety1).by(5, {x:150})
-            ).repeatForever()
-            .start()
+        sc.loadDataByID(id)
     }
 
-    addOneHero(pos?:cc.Vec3)
+    sequence_move()
     {
+        this.emety_list.forEach((emety, index) => {
+            let node = emety
+            let idx = index
+            let sc = node.getComponent("enemy")
+            // node.setPosition(p1)
+            let nowIndex = 0
+            let p1 = this.map_list[nowIndex].getPosition()
+            let p2 = this.map_list[++nowIndex].getPosition()
+    
+            let getNext = (()=>{
+                let tempindex = nowIndex + 1
+                cc.log("nowIndex", index, tempindex)
+                if(!this.map_list[tempindex])
+                {   // 结束了
+                    cc.log("结束了所有的动作", idx)
+                    return
+                }
+                let p1 = node.getPosition()
+                let p2 = this.map_list[++nowIndex].getPosition()
+                sc.move(p1, p2, getNext)
+            }).bind(this)
+            cc.log("index", idx)
+            
+            cc.tween(node).delay(idx*0.5).call(()=>{
+                sc.move(p1, p2, getNext)
+            }).start()
+            
+        });
 
+    }
+
+    addOneHero(id:number, pos?:cc.Vec3)
+    {
         let hero = cc.instantiate(this.hero) 
         hero.parent = this.map_bg.node
         let sc1 = hero.getComponent("hero")
+        hero.active = false
         sc1.setMap(this)
-        sc1.resetHero(100, 100, 1, 20)
-
+        sc1.loadDataByID(id)
         hero.position = pos == null?cc.v3(0, -100, 0):pos
     }
-
-
-
 
 
 
