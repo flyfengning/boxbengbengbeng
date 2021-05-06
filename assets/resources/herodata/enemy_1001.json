@@ -1,6 +1,6 @@
 {
 	"id":1001,
-     "blood_num": 100000,
+     "blood_num": 1000,
      "attack_num": 0,
      "defense_num": 10,
      "skill_list":[],

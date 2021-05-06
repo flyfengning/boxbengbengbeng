@@ -119,7 +119,7 @@ export default class HeroBase extends cc.Component
         let dir = calc_angle(p1, p2)
         dir = dir * Math.PI / 180
         let index = 0
-        cc.tween(this).delay(0.016).call((()=>{
+        cc.tween(this.node).delay(0.016).call((()=>{
             let tempSped = this.move_speed - this.move_retard
             tempSped  = tempSped > 0 ? tempSped : 0
             let subx = 0
