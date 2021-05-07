@@ -19,8 +19,15 @@ export default class enemy extends HeroBase {
     @property(cc.Label)
     blood_volume:cc.Label = null;
 
+    map = null
+
     onLoad () {
 
+    }
+
+    setMap(_map)
+    {
+        this.map = _map
     }
 
     start() {
@@ -37,7 +44,17 @@ export default class enemy extends HeroBase {
     }
     on_die(){
         cc.log("enemy:on_die", this.name)
-        this.node.removeFromParent()
+        this.map.kill_enemy(this)
+        // this.map.enemy_list.
+        // for(let i = 0; i < this.map.enemy_list.length; i++)
+        // {
+        //     if(this.map.enemy_list[i] == this.node)
+        //     {
+        //         this.map.enemy_list.splice(i, 1)
+        //         break
+        //     }
+        // }
+        // this.node.removeFromParent()// 需要从列表里面删除
     }
 
     move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)

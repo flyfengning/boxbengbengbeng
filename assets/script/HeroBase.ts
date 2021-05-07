@@ -23,7 +23,16 @@ export default class HeroBase extends cc.Component
 {
     public tag_key:number = -1;
 
-    /////////////////////////// 公用属性//////////////////////////
+    ////////////////////////////基础属性//////////////////////////
+    // 血量
+    private blood_num_base:number = 0
+    // 攻击力
+    private attack_num_base:number = 0
+    // 防御力
+    private defense_num_base:number = 0
+    // 攻击速度 次/s
+    private attack_speed_base:number = 0
+    ////////////////////////////公用属性//////////////////////////
     // 血量
     public blood_num:number = 0
     // 攻击力
@@ -36,6 +45,12 @@ export default class HeroBase extends cc.Component
     public skill_list:Array<SKILL_TYPE> = [];
     // 攻击速度 次/s
     public attack_speed:number = 0
+    // 等级
+    public lv_num:number = 0;
+    // 星级
+    public star_num:number = 0;
+    // 星级加成(攻击)
+    star_addition_blood:number = 10
 
     @property({type:cc.Sprite})
     head_img:cc.Sprite = null
@@ -43,12 +58,33 @@ export default class HeroBase extends cc.Component
     // 怪物名字
     public name:string = ""
 
-    // 移动属性
+    ////////////////// 移动属性
     // 移动速度
     public move_speed:number = 0
     // 减速属性
     public move_retard:number = 0
 
+    public set lv(_lv)
+    {   
+        this.lv_num = _lv
+    }
+
+    public get lv()
+    {
+        return this.lv_num
+    }
+
+    public set star(_star:number)
+    {   
+        this.star_num = _star
+    }
+
+    public get star()
+    {
+        return this.star_num
+    }
+
+    // 血量
     private get blood()
     {
         return this.blood_num
@@ -57,7 +93,7 @@ export default class HeroBase extends cc.Component
     {
         this.blood_num = _blood
     }
-
+    // 攻击力
     private get attack()
     {
         return this.attack_num
@@ -68,7 +104,7 @@ export default class HeroBase extends cc.Component
         this.attack_num = _attack
     }
 
-    loadDataByID(id:number)
+    loadDataByID(id:number, lv:number = 1, star:number = 1)
     {  
 
         this.tag_key = getkey()
@@ -103,14 +139,12 @@ export default class HeroBase extends cc.Component
             }
             else
             {
-                cc.log(jdata.json)
+                // cc.log(jdata.json)
                 let data = jdata.json
-                this.resetHero(data.blood_num, data.attack_num, data.defense_num, data.attack_speed)
+                this.resetHero(data.blood_num, data.attack_num, data.defense_num, data.attack_speed, lv, star)
                 // 激活节点
-                this.node.active = true
-
+                // this.node.active = true
                 this.name = data.name?data.name:"未知名字"
-
                 // 预设速度
                 this.move_speed = data.move_speed ? data.move_speed:0
                 // 减速
@@ -137,14 +171,28 @@ export default class HeroBase extends cc.Component
         this.set_retard(sub_retard, time)
     }
 
-
     // blood血量  attack攻击力 defense防御力 attack_speed攻击速度
-    resetHero(blood:number, attack:number, defense:number, attack_speed:number)
+    resetHero(blood:number, attack:number, defense:number, attack_speed:number, lv:number=1, star:number=1)
     {
-        this.blood = blood
-        this.attack = attack
-        this.defense_num = defense
-        this.attack_speed = attack_speed 
+        // 这个是基数属性
+        this.blood_num_base = blood
+        this.attack_num_base = attack
+        this.defense_num_base = defense
+        this.attack_speed_base = attack_speed 
+        this.lv = lv
+        this.star = star
+        // 重新计算属性
+        this.calculate_property()
+    }
+
+    //重新计算属性
+    calculate_property()
+    {
+        // 计算公式  基础*等级+星级加成
+        this.blood = this.blood_num_base * this.lv + this.star * this.star_addition_blood 
+        this.attack =  this.attack_num_base * this.lv + this.star * this.star_addition_blood 
+        this.defense_num = this.defense_num_base * this.lv
+        this.attack_speed = this.attack_speed_base * this.lv
     }
 
     onLoad()

@@ -47,11 +47,11 @@ export default class hero extends HeroBase {
         {
             return
         }
-
+        cc.log('this.map.enemy_list.length', this.map.enemy_list.length)
         let emety:cc.Node = null
-        for(let i = 0; i < this.map.emety_list.length; i++)
+        for(let i = 0; i < this.map.enemy_list.length; i++)
         {
-            emety = this.map.emety_list[i]
+            emety = this.map.enemy_list[i]
             if(emety.getComponent("enemy").is_die == false)
             {
                 break

@@ -1,10 +1,10 @@
 {
-	"id":1002,
+	"id":1005,
     "blood_num": 80,
     "attack_num": 0,
     "defense_num": 5,
     "skill_list":[],
     "attack_speed": 0,
-    "name": "大黄鸡1002号",
-    "move_speed":50 
+    "name": "小兔子1005号",
+    "move_speed":30 
 }

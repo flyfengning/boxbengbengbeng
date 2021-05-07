@@ -1,10 +1,10 @@
 {
-	"id":2001,
+	"id":2003,
      "blood_num": 100,
-     "attack_num": 100,
+     "attack_num": 20,
      "defense_num": 0,
      "skill_list":[],
-     "attack_speed": 1,
+     "attack_speed": 2,
      "name": "小狗狗007"
 }
 
