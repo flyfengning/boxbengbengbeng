@@ -8,10 +8,12 @@
 const {ccclass, property} = cc._decorator;
 import HeroBase from "./HeroBase"
 
+import {calc_angle} from "./GlobalFunc"
+
 @ccclass
 export default class enemy extends HeroBase {
 
-    @property(cc.Sprite)
+    @property({type:cc.Sprite, override:true})
     head_img:cc.Sprite = null;
 
     @property(cc.Label)
@@ -37,4 +39,48 @@ export default class enemy extends HeroBase {
         cc.log("enemy:on_die", this.name)
         this.node.removeFromParent()
     }
+
+    move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)
+    {
+
+        let _tag = this.tag_key + "" + 123
+        let tag = Number(_tag)
+        cc.Tween.stopAllByTag(Number(tag)) // 先干掉动作
+
+        this.node.setPosition(p1)
+
+        // 计算时间
+        // 每一帧应该移动的距离 = 速度（速度-减速）*时间（0.016）直到终点
+        // 方向
+        let dir = calc_angle(p1, p2)
+        dir = dir * Math.PI / 180
+        let index = 0
+        cc.tween(this.node).delay(0.016).call((()=>{
+            let tempSped = this.move_speed - this.move_retard
+            tempSped  = tempSped > 0 ? tempSped : 0
+            let subx = 0
+            let suby = 0
+            if(tempSped > 0)
+            {
+                subx = Math.cos(dir) * (tempSped) / 60
+                suby = Math.sin(dir) * (tempSped) / 60 
+            }
+
+            this.node.x += subx
+            this.node.y += suby
+            // cc.log("***********subx, subx", tempSped, subx, suby, this.node.x, this.node.y, p2.x, p2.y)
+            if(Math.abs(this.node.x - p2.x) <= 2 && Math.abs(this.node.y - p2.y) <= 2 )
+            {
+                cc.Tween.stopAllByTag(Number(tag)) // 先干掉动作
+                if(callBack)
+                {
+                    callBack()
+                }
+            }
+        }).bind(this)).union()
+        .repeatForever()
+        .tag(Number(tag))
+        .start()
+    }
+
 }

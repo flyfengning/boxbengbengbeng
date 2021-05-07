@@ -20,6 +20,9 @@ export default class hero extends HeroBase {
      
     attack_tag = 65432
 
+    @property({type:cc.Sprite, override:true})
+    head_img:cc.Sprite = null;
+
     start () {
         let self = this
         // this.resetHero(100, 1, 1, 1)

@@ -11,7 +11,7 @@ const enum SKILL_TYPE{
 
 const {ccclass, property} = cc._decorator;
 
-import {calc_angle} from "./GlobalFunc"
+
 
 let key = 1
 const getkey = ()=>{
@@ -36,6 +36,9 @@ export default class HeroBase extends cc.Component
     public skill_list:Array<SKILL_TYPE> = [];
     // 攻击速度 次/s
     public attack_speed:number = 0
+
+    @property({type:cc.Sprite})
+    head_img:cc.Sprite = null
 
     // 怪物名字
     public name:string = ""
@@ -80,7 +83,20 @@ export default class HeroBase extends cc.Component
         {
             resPath = "herodata/enemy_" + String(id)
         }
-        cc.resources.load(resPath, cc.JsonAsset,((error, jdata)=>{
+
+        let headPath = "node/fight_" + String(id)
+
+        cc.resources.load(headPath, cc.SpriteFrame, ((error, spriteFrame)=>{
+            if(spriteFrame)
+            {
+                if(this.head_img)  // 子类必须实现
+                {
+                    this.head_img.spriteFrame = spriteFrame
+                }
+            }
+        }).bind(this))
+
+        cc.resources.load(resPath, cc.JsonAsset, ((error, jdata)=>{
             if(error)
             {
                 cc.log(error)
@@ -104,55 +120,23 @@ export default class HeroBase extends cc.Component
         }).bind(this))
     }
 
-    move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)
+    // 设置减速
+    set_retard(_retard:number, time:number)
     {
-
-        let _tag = this.tag_key + "" + 123
-        let tag = Number(_tag)
-        cc.Tween.stopAllByTag(Number(tag)) // 先干掉动作
-
-        this.node.setPosition(p1)
-
-        // 计算时间
-        // 每一帧应该移动的距离 = 速度（速度-减速）*时间（0.016）直到终点
-        // 方向
-        let dir = calc_angle(p1, p2)
-        dir = dir * Math.PI / 180
-        let index = 0
-        cc.tween(this.node).delay(0.016).call((()=>{
-            let tempSped = this.move_speed - this.move_retard
-            tempSped  = tempSped > 0 ? tempSped : 0
-            let subx = 0
-            let suby = 0
-            if(tempSped > 0)
-            {
-                subx = Math.cos(dir) * (tempSped) / 60
-                suby = Math.sin(dir) * (tempSped) / 60 
-            }
-
-            this.node.x += subx
-            this.node.y += suby
-
-            index ++
-            // if(index == 30)
-            // {
-            //     this.move_retard = 75
-            // }
-
-            // cc.log("***********subx, subx", tempSped, subx, suby, this.node.x, this.node.y, p2.x, p2.y)
-            if(Math.abs(this.node.x - p2.x) <= 2 && Math.abs(this.node.y - p2.y) <= 2 )
-            {
-                cc.Tween.stopAllByTag(Number(tag)) // 先干掉动作
-                if(callBack)
-                {
-                    callBack()
-                }
-            }
-        }).bind(this)).union()
-        .repeatForever()
-        .tag(Number(tag))
-        .start()
+        this.move_retard = _retard
     }
+    // 设置百分比减速
+    set_retard_scale(_retard:number, time:number)
+    {
+        try {
+            _retard >= 0 && _retard <= 1
+        } catch (error) {
+            cc.log("set_retard_scale _retard must > 0 and _retard < 1", _retard)
+        }
+        let sub_retard = this.move_speed * _retard
+        this.set_retard(sub_retard, time)
+    }
+
 
     // blood血量  attack攻击力 defense防御力 attack_speed攻击速度
     resetHero(blood:number, attack:number, defense:number, attack_speed:number)
