@@ -57,6 +57,11 @@ export default class enemy extends HeroBase {
         // this.node.removeFromParent()// 需要从列表里面删除
     }
 
+    refush()
+    {
+        this.blood_volume.string = String(this.blood_num)
+    }
+
     move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)
     {
 

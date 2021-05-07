@@ -41,7 +41,7 @@ export default class NewClass extends cc.Component {
     // 地图块列表
     public map_list:Array<cc.Node> = []
     // 间隔时间
-    public interval_time:number = 10
+    public interval_time:number = 15
     // 波数
     public group_count:number = 0
 
@@ -108,11 +108,11 @@ export default class NewClass extends cc.Component {
         this.btn_addhero.node.on(cc.Node.EventType.TOUCH_END, (()=>{
 
             // 金币不足
-            if(this.gold_num < this.genner_num )
-            {
-                cc.log("金币不足")
-                return
-            }
+            // if(this.gold_num < this.genner_num )
+            // {
+            //     cc.log("金币不足")
+            //     return
+            // }
             let index = Math.floor(Math.random()*100 % this.hero_range.length)
             // 从地图里面随机取出一个空位
             let key = []
@@ -123,13 +123,17 @@ export default class NewClass extends cc.Component {
                     key.push(i)
                 }
             }
-            let index1 = Math.floor(Math.random()*100 % key.length)
+            if(key.length > 0)
+            {
+                let index1 = Math.floor(Math.random()*100 % key.length)
             
-            this.addOneHero(this.hero_range[index], key[index1])
+                this.addOneHero(this.hero_range[index], key[index1])
+    
+                // 金币
+                this.add_gold_num(this._genner_num * -1)
+                this.genner_num += this._genner_add_num
+            }
 
-            // 金币
-            this.add_gold_num(this._genner_num * -1)
-            this.genner_num += this._genner_add_num
 
         }).bind(this))
     }
@@ -160,15 +164,17 @@ export default class NewClass extends cc.Component {
         // 当前的波数
         this.group_count ++;
         let pos:cc.Vec2 = this.getBeginPos()
+        let temp = []
         for(let i = 0; i < list.length; i++)
         {
-            this.addOneEnemy(list[i], pos)
+            let node = this.addOneEnemy(list[i], pos)
+            temp.push(node)
         }
         // 开始移动到终点
-        this.sequence_move()
+        this.sequence_move(temp)
     }
 
-    addOneEnemy(id:number, pos?:cc.Vec3|cc.Vec2)
+    addOneEnemy(id:number, pos?:cc.Vec3|cc.Vec2):cc.Node
     {
         let emety1 = cc.instantiate(this.emety)
         emety1.parent = this.map_bg.node
@@ -180,11 +186,13 @@ export default class NewClass extends cc.Component {
         emety1.setPosition(pos == null?this.getBeginPos():pos)
         emety1.active = false
         sc.loadDataByID(id, this.group_count)
+
+        return emety1
     }
 
-    sequence_move()
+    sequence_move(temp_list)
     {
-        this.enemy_list.forEach((emety, index) => {
+        temp_list.forEach((emety, index) => {
             let node = emety
             if(node.active == false)
             {
@@ -200,7 +208,7 @@ export default class NewClass extends cc.Component {
                     let tempindex = nowIndex + 1
                     if(!this.map_list[tempindex])
                     {   // 结束了
-                        cc.log("有怪物到达了终点", idx)
+                        cc.log("有怪物到达了终点", sc.tag_key)
                         return
                     }
                     let p1 = node.getPosition()
@@ -208,12 +216,16 @@ export default class NewClass extends cc.Component {
                     sc.move(p1, p2, getNext)
                 }).bind(this)
             
-                cc.tween(node).delay((idx-1)*0.5).call(()=>{
+                cc.tween(node).delay((idx)*1.3).call(()=>{
                     // 显示出来
                     node.active = true
-                    cc.tween(node).to(0.1, {scale:1}).start()  //缩放效果
+                    cc.tween(node).to(0.2, {scale:0.8}).start()  //缩放效果
                     sc.move(p1, p2, getNext)
                 }).start()
+            }
+            else
+            {
+                cc.log("---------------------------------")
             }
         });
     }

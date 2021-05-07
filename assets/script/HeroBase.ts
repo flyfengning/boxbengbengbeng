@@ -108,7 +108,7 @@ export default class HeroBase extends cc.Component
     {  
 
         this.tag_key = getkey()
-        cc.log("this.tag_key", this.tag_key)
+        // cc.log("this.tag_key", this.tag_key)
 
         let resPath = ""
         if (Math.floor(id/1000) == 2)
@@ -149,9 +149,17 @@ export default class HeroBase extends cc.Component
                 this.move_speed = data.move_speed ? data.move_speed:0
                 // 减速
                 this.move_retard = 0
+
+                this.refush()
             }
 
         }).bind(this))
+    }
+    // 主动刷新界面
+
+    refush()
+    {
+        // 需要主动刷新界面显示   
     }
 
     // 设置减速

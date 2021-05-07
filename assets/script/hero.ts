@@ -13,31 +13,37 @@ import HeroBase from "./HeroBase"
 @ccclass
 export default class hero extends HeroBase {
 
+    // 地图
     map = null
 
     // 是否可以攻击
     is_can_attack = true
-     
+    
+    // 攻击动作
     attack_tag = 65432
 
     @property({type:cc.Sprite, override:true})
     head_img:cc.Sprite = null;
 
-    start () {
+    start() {
         let self = this
-        // this.resetHero(100, 1, 1, 1)
-        cc.tween(this.node).repeatForever(
-            cc.tween(this.node).delay(0.1)
-            .call(this.findEmety.bind(self))
-            .start()
-        ).tag(this.attack_tag)
+        cc.tween(this.node)
+        .delay(0.1)
+        .call(this.findEmety.bind(self))
+        .union()
+        .repeatForever()
+        .tag(Number(this.tag_key + "" + this.attack_tag))
         .start()
-        
     }
 
     setMap(_map)
     {
         this.map = _map
+    }
+
+    refush()
+    {
+
     }
 
 
