@@ -32,6 +32,9 @@ export default class NewClass extends cc.Component {
     @property({type:[cc.Node]})
     hero_bg:Array<cc.Node> = []
 
+    @property({type:cc.Layout})
+    result_bg:cc.Layout = null
+
     // 英雄取值范围
     public hero_range:Array<number> = []
     // 英雄列表(@注意不是顺序的，中间有空的)
@@ -41,7 +44,7 @@ export default class NewClass extends cc.Component {
     // 地图块列表
     public map_list:Array<cc.Node> = []
     // 间隔时间
-    public interval_time:number = 15
+    public interval_time:number = 20
     // 波数
     public group_count:number = 0
 
@@ -82,7 +85,15 @@ export default class NewClass extends cc.Component {
         this.gold_num += num
     }
 
+    sp_Atlas:cc.SpriteAtlas = null
     start () {
+        cc.resources.load("node/nodes", cc.SpriteAtlas, ((error, sp_atlas)=>{
+            if(!error)
+            {
+                this.sp_Atlas = sp_atlas
+                cc.log("----------------加载完毕node/nodes")
+            }
+        }).bind(this))
 
         this.hero_range.push(2001)
         this.hero_range.push(2002)
@@ -142,13 +153,14 @@ export default class NewClass extends cc.Component {
     {
         // 计时开始怪物
         cc.tween(this)
-        .call((()=>{
-            this.addListEnemy()
-        }).bind(this))
-        .delay(this.interval_time)
-        .union()
-        .repeatForever()
-        .start()
+            .call((()=>{
+                this.addListEnemy()
+            }).bind(this))
+            .delay(this.interval_time)
+            .union()
+            .repeatForever()
+            .tag(123)
+            .start()
     }
 
     getBeginPos():cc.Vec2
@@ -208,7 +220,8 @@ export default class NewClass extends cc.Component {
                     let tempindex = nowIndex + 1
                     if(!this.map_list[tempindex])
                     {   // 结束了
-                        cc.log("有怪物到达了终点", sc.tag_key)
+                        // cc.log("有怪物到达了终点", sc.tag_key)
+                        this.stopGame()
                         return
                     }
                     let p1 = node.getPosition()
@@ -263,6 +276,28 @@ export default class NewClass extends cc.Component {
 
     }
 
+    // 停止游戏
+    stopGame()
+    {   
+        // 停止动作
+        this.enemy_list.forEach((enemy)=>{
+            cc.Tween.stopAllByTarget(enemy)
+        })
+        // 停止hero动作
+        this.hero_list.forEach((hero)=>{
+            cc.Tween.stopAllByTarget(hero)
+        })
+        // 停止生成
+        
+
+        this.showResult()
+    }
+
+    showResult()
+    {
+        this.result_bg.node.active = true
+        let result = this.result_bg.getComponent("Result")
+    }
 
     // update (dt) {}
 }

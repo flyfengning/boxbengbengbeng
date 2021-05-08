@@ -18,6 +18,8 @@ const getkey = ()=>{
     return key++
 }
 
+const HeroDataManger:Map<string, any> = new Map()
+
 @ccclass
 export default class HeroBase extends cc.Component
 {
@@ -33,6 +35,8 @@ export default class HeroBase extends cc.Component
     // 攻击速度 次/s
     private attack_speed_base:number = 0
     ////////////////////////////公用属性//////////////////////////
+    // 怪物名字
+    public name:string = ""
     // 血量
     public blood_num:number = 0
     // 攻击力
@@ -52,17 +56,20 @@ export default class HeroBase extends cc.Component
     // 星级加成(攻击)
     star_addition_blood:number = 10
 
-    @property({type:cc.Sprite})
-    head_img:cc.Sprite = null
-
-    // 怪物名字
-    public name:string = ""
 
     ////////////////// 移动属性
     // 移动速度
     public move_speed:number = 0
     // 减速属性
     public move_retard:number = 0
+
+    /***************提供给子类（需要继承）的属性***********************/
+    map = null
+
+    @property({type:cc.Sprite})
+    head_img:cc.Sprite = null
+    /***************************************************************/
+
 
     public set lv(_lv)
     {   
@@ -106,7 +113,6 @@ export default class HeroBase extends cc.Component
 
     loadDataByID(id:number, lv:number = 1, star:number = 1)
     {  
-
         this.tag_key = getkey()
         // cc.log("this.tag_key", this.tag_key)
 
@@ -122,38 +128,63 @@ export default class HeroBase extends cc.Component
 
         let headPath = "node/fight_" + String(id)
 
-        cc.resources.load(headPath, cc.SpriteFrame, ((error, spriteFrame)=>{
-            if(spriteFrame)
+        if(this.map.sp_Atlas)
+        {
+            let headName = "fight_" + String(id)
+            let spriteFrame = this.map.sp_Atlas.getSpriteFrame(headName)
+            if(this.head_img && spriteFrame)  // 子类需要实现， base里面是个空节点
             {
-                if(this.head_img)  // 子类必须实现
-                {
-                    this.head_img.spriteFrame = spriteFrame
-                }
-            }
-        }).bind(this))
-
-        cc.resources.load(resPath, cc.JsonAsset, ((error, jdata)=>{
-            if(error)
-            {
-                cc.log(error)
+                this.head_img.spriteFrame = spriteFrame
             }
             else
             {
-                // cc.log(jdata.json)
-                let data = jdata.json
-                this.resetHero(data.blood_num, data.attack_num, data.defense_num, data.attack_speed, lv, star)
-                // 激活节点
-                // this.node.active = true
-                this.name = data.name?data.name:"未知名字"
-                // 预设速度
-                this.move_speed = data.move_speed ? data.move_speed:0
-                // 减速
-                this.move_retard = 0
-
-                this.refush()
+                cc.log("spriteFrame is not find", spriteFrame)
             }
+        }
+        else
+        {
+            cc.resources.load(headPath, cc.SpriteFrame, ((error, spriteFrame)=>{
+                if(spriteFrame)
+                {
+                    // cc.
+                    if(this.head_img)  // 子类需要实现， base里面是个空节点
+                    {
+                        this.head_img.spriteFrame = spriteFrame
+                    }
+                }
+            }).bind(this))
+        }
 
-        }).bind(this))
+        let load = ((jdata)=>{
+            let data = jdata.json
+            this.resetHero(data.blood_num, data.attack_num, data.defense_num, data.attack_speed, lv, star)
+            this.name = data.name?data.name:"未知名字"
+            // 预设速度
+            this.move_speed = data.move_speed ? data.move_speed:0
+            // 减速
+            this.move_retard = 0
+            this.refush()
+        }).bind(this)
+
+        if(HeroDataManger.has(resPath))
+        {
+            let jdata = HeroDataManger.get(resPath)
+            load(jdata)
+        }
+        else
+        {
+            cc.resources.load(resPath, cc.JsonAsset, ((error, jdata)=>{
+                HeroDataManger.set(resPath, jdata)
+                if(error)
+                {
+                    cc.log(error)
+                }
+                else
+                {
+                    load(jdata)
+                }
+            }).bind(this))
+        }
     }
     // 主动刷新界面
 
@@ -199,8 +230,8 @@ export default class HeroBase extends cc.Component
         // 计算公式  基础*等级+星级加成
         this.blood = this.blood_num_base * this.lv + this.star * this.star_addition_blood 
         this.attack =  this.attack_num_base * this.lv + this.star * this.star_addition_blood 
-        this.defense_num = this.defense_num_base * this.lv
-        this.attack_speed = this.attack_speed_base * this.lv
+        this.defense_num = this.defense_num_base  // 成长属性太高了
+        this.attack_speed = this.attack_speed_base * this.lv // 攻速设置上限
     }
 
     onLoad()
