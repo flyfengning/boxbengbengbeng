@@ -35,6 +35,14 @@ export default class NewClass extends cc.Component {
     @property({type:cc.Layout})
     result_bg:cc.Layout = null
 
+    // 第几波
+    @property({type:cc.Label})
+    group_label:cc.Label = null
+
+    // 当前选择的英雄
+    select_hero:cc.Node = null
+    select_index:number = -1
+
     // 英雄取值范围
     public hero_range:Array<number> = []
     // 英雄列表(@注意不是顺序的，中间有空的)
@@ -44,7 +52,7 @@ export default class NewClass extends cc.Component {
     // 地图块列表
     public map_list:Array<cc.Node> = []
     // 间隔时间
-    public interval_time:number = 20
+    public interval_time:number = 15
     // 波数
     public group_count:number = 0
 
@@ -65,6 +73,17 @@ export default class NewClass extends cc.Component {
     {
         this._gold_num = _num
         this.gold_num_label.string = (String(this._gold_num))
+
+        // this.btn_addhero
+        if(this._gold_num >= this.genner_num)
+        {
+            this.btn_addhero.interactable = true
+        }
+        else
+        {
+            this.btn_addhero.interactable = false
+        }
+
     }
     get gold_num():number
     {
@@ -119,11 +138,11 @@ export default class NewClass extends cc.Component {
         this.btn_addhero.node.on(cc.Node.EventType.TOUCH_END, (()=>{
 
             // 金币不足
-            // if(this.gold_num < this.genner_num )
-            // {
-            //     cc.log("金币不足")
-            //     return
-            // }
+            if(this.gold_num < this.genner_num )
+            {
+                cc.log("金币不足")
+                return
+            }
             let index = Math.floor(Math.random()*100 % this.hero_range.length)
             // 从地图里面随机取出一个空位
             let key = []
@@ -152,15 +171,26 @@ export default class NewClass extends cc.Component {
     start_emety()
     {
         // 计时开始怪物
+        let timeCount = this.interval_time - 5 // 第一次是5s出兵
         cc.tween(this)
             .call((()=>{
-                this.addListEnemy()
+                timeCount++;
+                if (timeCount >= this.interval_time)
+                {
+                    timeCount = 0
+                    this.addListEnemy()
+                }
             }).bind(this))
-            .delay(this.interval_time)
+            .delay(1)
             .union()
             .repeatForever()
             .tag(123)
             .start()
+    }
+
+    stop_emety()
+    {
+        cc.Tween.stopAllByTarget(this)
     }
 
     getBeginPos():cc.Vec2
@@ -175,6 +205,20 @@ export default class NewClass extends cc.Component {
         let list:Array<number> = [1001, 1002, 1003, 1004, 1005]
         // 当前的波数
         this.group_count ++;
+
+        this.group_label.string = "第" + this.group_count + "波"
+
+
+        if(this.group_count >= 10)
+        {   
+            // 超过10层， 超过的波数每5波增加数量1
+            for(let i = 0; i < this.group_count/5-1; i++)
+            {
+                let index = Math.floor(Math.random() * 100) % 5
+                list.push(list[index]) 
+            }
+        }
+
         let pos:cc.Vec2 = this.getBeginPos()
         let temp = []
         for(let i = 0; i < list.length; i++)
@@ -243,22 +287,137 @@ export default class NewClass extends cc.Component {
         });
     }
 
-    // id和位置
-    addOneHero(id:number, index:number)
-    {
+    // 获取hero的位置
+    getHeroPos(index:number){
         let pos = this.hero_bg[index].getPosition()
         let w_p = this.hero_bg[index].getParent().convertToWorldSpaceAR(pos)
-        
+
+        return this.map_bg.node.convertToNodeSpaceAR(w_p)
+    }
+
+    // id和位置
+    addOneHero(id:number, index:number, lv:number = 1)
+    {
         let hero = cc.instantiate(this.hero) 
         hero.parent = this.map_bg.node
         let sc1 = hero.getComponent("hero")
         // hero.active = false
         sc1.setMap(this)
-        sc1.loadDataByID(id)
-        hero.setPosition(this.map_bg.node.convertToNodeSpaceAR(w_p))
+        sc1.loadDataByID(id, lv)
+        hero.setPosition(this.getHeroPos(index))
 
         this.hero_list[index] = hero
+
+        hero.on(cc.Node.EventType.TOUCH_START, ((touches)=>{
+            this.on_touch_hero_begin(index)
+        }).bind(this))
+
+        hero.on(cc.Node.EventType.TOUCH_MOVE, ((touches)=>{
+            this.on_touch_hero_moved(touches)
+        }).bind(this))
+
+        hero.on(cc.Node.EventType.TOUCH_END, ((touches)=>this.on_touch_hero_ended(touches)).bind(this))
     }
+
+    on_touch_hero_begin(index:number)
+    {
+        // select_hero
+        this.select_index = index
+        this.select_hero = this.hero_list[index]
+        this.select_hero.zIndex = 2 // 在所有同节点的上面
+    }
+
+    on_touch_hero_moved(touches)
+    {
+        if(this.select_hero)
+        {
+            let t_pos = touches.getLocation()
+            let pos = this.select_hero.getParent().convertToNodeSpaceAR(t_pos)
+            this.select_hero.setPosition(pos)
+        }
+    }
+
+    //合成
+    on_touch_hero_ended(touches)
+    {
+        if(this.select_hero)
+        {   
+            let t_pos = touches.getLocation()
+            let pos = this.select_hero.getParent().convertToNodeSpaceAR(t_pos)
+
+            let find_index = -1
+            // 查看这个点和哪个相交
+            for (let i = 0; i < this.hero_bg.length; i++)
+            {
+                // 查看当前是否有英雄
+                if(this.hero_list[i] != null && i != this.select_index)
+                {
+                    let _tpos = this.hero_bg[i].convertToNodeSpaceAR(t_pos)
+                    let _r = new cc.Rect(this.hero_bg[i].width/2*-1, this.hero_bg[i].height/2*-1, this.hero_bg[i].width+5, this.hero_bg[i].height+5)
+                    let check = _r.contains(_tpos)
+                    if(check)
+                    {
+                        find_index = i
+                        break
+                    }
+                }
+            }
+
+            if(find_index != -1)
+            {
+                // 合成
+                if (!this.composite_hero(find_index, this.select_index))
+                {
+                    // 重新归位          
+                    this.select_hero.setPosition(this.getHeroPos(this.select_index))
+                    this.select_hero.zIndex = 0
+                }
+            }
+            else
+            {
+                this.select_hero.setPosition(this.getHeroPos(this.select_index))
+                this.select_hero.zIndex = 0
+            }
+        }
+        this.select_hero = null // 置空
+        this.select_index = -1
+    }
+
+    // 合成两个节点
+    composite_hero(index1, index2):boolean
+    {   
+        
+        let node1 = this.hero_list[index1]
+        let node2 = this.hero_list[index2]
+        let lv1 = node1.getComponent("hero").lv
+        let lv2 = node2.getComponent("hero").lv
+
+        let id1 = node1.getComponent("hero").id
+        let id2 = node2.getComponent("hero").id
+
+        if(lv1 == lv2)
+        {
+            this.hero_list[index1] = null
+            node1.removeFromParent()
+
+            this.hero_list[index2] = null
+            node2.removeFromParent()
+
+            // 随机出来一个id
+            let index = Math.floor(Math.random()*100 % this.hero_range.length)
+            let id = this.hero_range[index]
+
+            this.addOneHero(id, index1, lv1 + 1)
+
+            return true
+        }
+        else // tips 提示
+        {
+            cc.log("-----------合成失败")
+            return false
+        }
+    }
+
 
     kill_enemy(enemy)
     {
@@ -288,7 +447,7 @@ export default class NewClass extends cc.Component {
             cc.Tween.stopAllByTarget(hero)
         })
         // 停止生成
-        
+        this.stop_emety()
 
         this.showResult()
     }

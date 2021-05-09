@@ -19,6 +19,9 @@ export default class enemy extends HeroBase {
     @property(cc.Label)
     blood_volume:cc.Label = null;
 
+    @property(cc.Node)
+    tips_num:cc.Node = null;
+
     map = null
 
     onLoad () {
@@ -38,6 +41,19 @@ export default class enemy extends HeroBase {
 
     on_hit(hit_number:number){
         this.blood_volume.string = String(this.blood_num)
+
+        let tips = cc.instantiate(this.tips_num)
+        tips.active = true
+        tips.parent = this.node
+        tips.getComponent(cc.Label).string = hit_number + ""
+        tips.x = this.node.width / 3 * (-1) + Math.floor(Math.random() * 100 %(this.node.width/3*2)) 
+        tips.y = 24
+        cc.tween(tips).by(0.3, {y:15, opacity:50})
+        .removeSelf()
+        .start()
+
+
+        // 24.816
     }
     on_blood_back(){
         cc.log("enemy:on_blood_back")

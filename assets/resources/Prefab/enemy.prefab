@@ -222,7 +222,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 33.36,
+      "width": 0,
       "height": 20
     },
     "_anchorPoint": {
@@ -454,6 +454,9 @@
     },
     "blood_volume": {
       "__id__": 6
+    },
+    "tips_num": {
+      "__id__": 8
     },
     "_id": ""
   },

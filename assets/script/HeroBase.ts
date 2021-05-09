@@ -230,8 +230,8 @@ export default class HeroBase extends cc.Component
         // 计算公式  基础*等级+星级加成
         this.blood = this.blood_num_base * this.lv + this.star * this.star_addition_blood 
         this.attack =  this.attack_num_base * this.lv + this.star * this.star_addition_blood 
-        this.defense_num = this.defense_num_base  // 成长属性太高了
-        this.attack_speed = this.attack_speed_base * this.lv // 攻速设置上限
+        this.defense_num = this.defense_num_base + this.lv *2 // 成长属性太高了
+        this.attack_speed = this.attack_speed_base * this.lv // 攻速注意设置上限
     }
 
     onLoad()

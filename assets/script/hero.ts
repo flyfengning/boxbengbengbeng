@@ -16,6 +16,8 @@ export default class hero extends HeroBase {
     // 地图
     map = null
 
+    //lv
+
     // 是否可以攻击
     is_can_attack = true
     
@@ -24,6 +26,9 @@ export default class hero extends HeroBase {
 
     @property({type:cc.Sprite, override:true})
     head_img:cc.Sprite = null;
+
+    @property({type:cc.Label, override:true})
+    lv_label:cc.Label = null;
 
     start() {
         let self = this
@@ -43,7 +48,7 @@ export default class hero extends HeroBase {
 
     refush()
     {
-
+        this.lv_label.string = String(this.lv)
     }
 
 
@@ -53,7 +58,7 @@ export default class hero extends HeroBase {
         {
             return
         }
-        cc.log('this.map.enemy_list.length', this.map.enemy_list.length)
+        // cc.log('this.map.enemy_list.length', this.map.enemy_list.length)
         let emety:cc.Node = null
         for(let i = 0; i < this.map.enemy_list.length; i++)
         {
