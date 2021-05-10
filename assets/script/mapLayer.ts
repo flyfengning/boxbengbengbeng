@@ -106,7 +106,7 @@ export default class NewClass extends cc.Component {
 
     sp_Atlas:cc.SpriteAtlas = null
     start () {
-        cc.resources.load("node/nodes", cc.SpriteAtlas, ((error, sp_atlas)=>{
+        cc.resources.load("node/node", cc.SpriteAtlas, ((error, sp_atlas)=>{
             if(!error)
             {
                 this.sp_Atlas = sp_atlas
