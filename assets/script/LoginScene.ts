@@ -16,6 +16,10 @@ export default class NewClass extends cc.Component {
     @property(cc.Button)
     start_game: cc.Button = null;
 
+
+    @property(cc.Button)
+    create_card: cc.Button = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -25,6 +29,11 @@ export default class NewClass extends cc.Component {
         this.start_game.node.on(cc.Node.EventType.TOUCH_END, (()=>{
             cc.director.loadScene("FightScene")
         }).bind(this))
+
+        this.create_card.node.on(cc.Node.EventType.TOUCH_END, (()=>{
+            cc.director.loadScene("CreatorHeroOrenemy")
+        }).bind(this))
+
     }   
 
     // update (dt) {}
