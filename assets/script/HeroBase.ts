@@ -34,6 +34,9 @@ export default class HeroBase extends cc.Component
     private defense_num_base:number = 0
     // 攻击速度 次/s
     private attack_speed_base:number = 0
+    // 暴击几率
+    private attack_Crit_base:number = 0
+
     ////////////////////////////公用属性//////////////////////////
     // 怪物名字
     public name:string = ""

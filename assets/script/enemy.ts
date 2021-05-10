@@ -52,7 +52,6 @@ export default class enemy extends HeroBase {
         .removeSelf()
         .start()
 
-
         // 24.816
     }
     on_blood_back(){
