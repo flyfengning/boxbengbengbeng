@@ -7,6 +7,22 @@
 
 const {ccclass, property} = cc._decorator;
 
+const showTips = (str:string)=>
+{
+    cc.resources.load("Prefab/tips", ((error, prefab)=>{
+        let scene = cc.director.getScene()
+        let tipsnode = cc.instantiate(prefab)
+        tipsnode.parent = scene
+        let Tips = tipsnode.getComponent("Tips")
+        Tips.string = str
+    }).bind(this))
+}
+// // window.showTips = showTips
+// declare interface Window {
+//     $showTips:function =  showTips
+// }
+window["showTips"] = showTips
+
 @ccclass
 export default class NewClass extends cc.Component {
 

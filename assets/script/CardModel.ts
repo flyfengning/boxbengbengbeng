@@ -5,7 +5,7 @@ enum skill{
 }
 enum attack_type{
     NORMAL,
-    
+
 
 }
 
@@ -20,7 +20,7 @@ enum attack_spark_type
 // 卡牌数据模型
 export interface CardModel{
     id:number;                      // id
-    blood:number;                   // 血量
+    blood:number;                   // 血量 
     attack:number                   // 攻击力
     defense:number                  // 防御力
     attack_speed:number             // 攻击速度
@@ -40,4 +40,5 @@ export interface CardModel{
     attack_crit_grop:number
     attack_number_grop:number
     attack_effnum_grop:number
+    
 }
