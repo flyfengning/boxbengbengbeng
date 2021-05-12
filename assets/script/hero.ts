@@ -121,7 +121,6 @@ export default class hero extends HeroBase {
             bullet.x = bulletPos.x
             bullet.y = bulletPos.y  
 
-            
             let movetime = 0.3
             cc.tween(bullet).sequence(
                 cc.tween(bullet).to(movetime, {

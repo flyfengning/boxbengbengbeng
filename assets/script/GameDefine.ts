@@ -20,6 +20,11 @@ namespace GAME {
         sustained,          // 多人攻击
     
     }
+    export class fuck_u{
+        static max_attack_crit:number = 123
+
+    }
+    export const max_attack_crit:number = 123  // 常量可以导出
 
 }
 

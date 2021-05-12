@@ -99,7 +99,7 @@ export default class NewClass extends cc.Component {
         skill : [],                       // 拥有的技能
         attack_type:GAME.attack_type.NORMAL,        // 攻击方式
         attack_spark:GAME.attack_spark_type.NORMAL,  // 攻击触发类型
-        attack_number:0,                    // 攻击对象数 
+        attack_targets:0,                    // 攻击对象数 
         attack_effnum:0,                // 攻击特效 每次的数值（毒/额外伤害/...d）
     
         /************  成长属性 ****************/

@@ -11,7 +11,8 @@ const enum SKILL_TYPE{
 
 const {ccclass, property} = cc._decorator;
 
-
+import {CardModel} from "./CardModel";
+import {GAME} from './GameDefine'
 
 let key = 1
 const getkey = ()=>{
@@ -20,10 +21,68 @@ const getkey = ()=>{
 
 const HeroDataManger:Map<string, any> = new Map()
 
+// id:number;                      // id
+// blood:number;                   // 血量 
+// attack:number                   // 攻击力
+// defense:number                  // 防御力
+// attack_speed:number             // 攻击速度
+// attack_crit:number              // 暴击
+// move_speed:number               // move_speed 移动速度
+// skill:Array<GAME.skill>              // 拥有的技能
+// attack_type:GAME.attack_type         // 攻击方式
+// attack_spark:GAME.attack_spark_type  // 攻击触发类型
+// attack_number:number            // 攻击对象数 
+// attack_effnum:number            // 攻击特效 每次的数值（毒/额外伤害/...d）
+
+// /************  成长属性 ****************/
+// blood_grow:number
+// attack_grow:number
+// defense_grow:number
+// attack_speed_grop:number
+// attack_crit_grop:number
+// attack_number_grop:number
+// attack_effnum_grop:number
+
 @ccclass
-export default class HeroBase extends cc.Component
+export default class HeroBase extends cc.Component implements CardModel
 {
     public tag_key:number = -1;
+
+    // CardModel 基础的属性
+    id:number;                              // id
+    blood:number;                           // 血量 
+    attack:number                           // 攻击力
+    defense:number                          // 防御力
+    attack_speed:number                     // 攻击速度
+    attack_crit:number                      // 暴击几率
+    move_speed:number                       // move_speed 移动速度
+    skill:Array<GAME.skill>                 // 拥有的技能
+    attack_type:GAME.attack_type            // 攻击方式
+    attack_spark:GAME.attack_spark_type     // 攻击触发类型
+    attack_targets:number                   // 攻击对象数 
+    attack_effnum:number                    // 攻击特效 每次的数值（毒/额外伤害/...d）
+
+    /************  成长属性 ****************/
+    blood_grow:number
+    attack_grow:number
+    defense_grow:number
+    attack_speed_grop:number
+    attack_crit_grop:number
+    attack_number_grop:number
+    attack_effnum_grop:number
+
+    /************  升星属性 ****************/   
+    
+    blood_star:number;
+    attack_star:number;
+    defense_star:number;
+    attack_speed_star:number;
+    attack_crit_star:number;
+    attack_number_star:number;
+    attack_effnum_star:number;
+
+    // indx = GAME.max_attack_crit
+
 
     ////////////////////////////基础属性//////////////////////////
     // 血量
@@ -37,6 +96,8 @@ export default class HeroBase extends cc.Component
     // 暴击几率
     private attack_Crit_base:number = 0
 
+    // private attack_type:number = 0
+
     ////////////////////////////公用属性//////////////////////////
     // 怪物名字
     public name:string = ""
@@ -49,9 +110,7 @@ export default class HeroBase extends cc.Component
     // 是否死亡
     public is_die:boolean = false;
     // 拥有的技能
-    public skill_list:Array<SKILL_TYPE> = [];
-    // 攻击速度 次/s
-    public attack_speed:number = 0
+    public skill_list:Array<GAME.skill> = [];
     // 等级
     public lv_num:number = 0;
     // 星级
@@ -60,9 +119,8 @@ export default class HeroBase extends cc.Component
     star_addition_blood:number = 10
 
 
-    ////////////////// 移动属性
-    // 移动速度
-    public move_speed:number = 0
+    /***********游戏中的属性**********/
+
     // 减速属性
     public move_retard:number = 0
 
@@ -73,7 +131,7 @@ export default class HeroBase extends cc.Component
     head_img:cc.Sprite = null
     /***************************************************************/
 
-
+    // 等级
     public set lv(_lv)
     {   
         this.lv_num = _lv
@@ -92,26 +150,6 @@ export default class HeroBase extends cc.Component
     public get star()
     {
         return this.star_num
-    }
-
-    // 血量
-    private get blood()
-    {
-        return this.blood_num
-    }
-    private set blood(_blood:number)
-    {
-        this.blood_num = _blood
-    }
-    // 攻击力
-    private get attack()
-    {
-        return this.attack_num
-    }
-
-    private set attack(_attack:number)
-    {
-        this.attack_num = _attack
     }
 
     loadDataByID(id:number, lv:number = 1, star:number = 1)
