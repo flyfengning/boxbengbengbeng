@@ -14,7 +14,61 @@ enum UITYPE_ENUM{
 
 }
 
+const UITYPE_STRING = [
+    "InputModel",
+    "CheckBox",
 
+]
+
+
+    // id:number;                      // id
+    // blood:number;                   // 血量 
+    // attack:number                   // 攻击力
+    // defense:number                  // 防御力
+    // attack_speed:number             // 攻击速度
+    // attack_crit:number              // 暴击
+    // move_speed:number               // move_speed 移动速度
+    // skill:Array<skill>              // 拥有的技能
+    // attack_type:attack_type         // 攻击方式
+    // attack_spark:attack_spark_type  // 攻击触发类型
+    // attack_number:number            // 攻击对象数 
+    // attack_effnum:number            // 攻击特效 每次的数值（毒/额外伤害/...d）
+
+    // blood_grow:number
+    // attack_grow:number
+    // defense_grow:number
+    // attack_speed_grop:number
+    // attack_crit_grop:number
+    // attack_number_grop:number
+    // attack_effnum_grop:number
+
+enum UI_EVENT_TYPE{
+    event_id = "event_id",
+    event_blood = "event_blood",
+    event_attack = "event_attack",
+    event_defense = "event_defense",
+    event_attack_speed = "event_attack_speed",
+    event_attack_crit = "event_attack_crit",
+    event_move_speed = "event_move_speed",
+    event_skill = "event_skill",
+    event_attack_type = "event_attack_type",
+    event_attack_number = "event_attack_number",
+    event_attack_effnum = "event_attack_effnum",
+    
+    // 成长
+    event_blood_grow = "event_blood_grow",
+    event_attack_grow = "event_attack_grow",
+    event_defense_grow = "event_defense_grow",
+    event_attack_speed_grop = "event_attack_speed_grop",
+    event_attack_crit_grop = "event_attack_crit_grop",
+    event_attack_number_grop = "event_attack_number_grop",
+    event_attack_effnum_grop = "event_attack_effnum_grop",
+
+
+    // 开关
+
+
+}
 
 
 @ccclass
@@ -35,45 +89,167 @@ export default class NewClass extends cc.Component {
 
         this.node.on("open_attack", (event)=>{
             cc.log("open_attack event~~~~~", event.getUserData())//  
-            // window.showTips("1111111111")
         }, this)
     }
 
     addBox(type:UITYPE_ENUM, pos:cc.Vec2, event:string, btn_name)
     {
         let btn_atk = null
-        let model = null
 
         switch(type){
             case UITYPE_ENUM.input:
             {
                 btn_atk = cc.instantiate(this.input_model)
-                model = btn_atk.getComponent("InputModel")
                 break
             }
             case UITYPE_ENUM.checkbox:
             {
                 btn_atk = cc.instantiate(this.check_model)
-                model = btn_atk.getComponent("CheckBox")
+                break
+            }
+            default:
+            {
+                cc.log("---------addBox------")
                 break
             }
         }
 
-        if(btn_atk && model)
+        if(btn_atk)
         {
+            let model = btn_atk.getComponent(UITYPE_STRING[type])
             btn_atk.parent = this.node
             btn_atk.setPosition(pos)
             model.envnt_name = event
             model.btn_name = btn_name
         }
+
+        return btn_atk
     }
+
+    // id:number;                      // id
+    // blood:number;                   // 血量 
+    // attack:number                   // 攻击力
+    // defense:number                  // 防御力
+    // attack_speed:number             // 攻击速度
+    // attack_crit:number              // 暴击
+    // move_speed:number               // move_speed 移动速度
+    // skill:Array<skill>              // 拥有的技能
+    // attack_type:attack_type         // 攻击方式
+    // attack_spark:attack_spark_type  // 攻击触发类型
+    // attack_number:number            // 攻击对象数 
+    // attack_effnum:number            // 攻击特效 每次的数值（毒/额外伤害/...d）
+
+    // /************  成长属性 ****************/
+    // blood_grow:number
+    // attack_grow:number
+    // defense_grow:number
+    // attack_speed_grop:number
+    // attack_crit_grop:number
+    // attack_number_grop:number
+    // attack_effnum_grop:number
+
+    /*没有开关的，强制必须有的类型*/
+    // id
+    id_node:cc.Node = null
+    // 血量
+    blood_node:cc.Node = null;
+    blood_grop_node:cc.Node = null
+    // 攻击
+    attack_node:cc.Node = null
+    attack_grop_node:cc.Node = null
+    // 防御
+    defense_node:cc.Node = null
+    defence_check_node = null //可开启的选项
+    defense_grop_node:cc.Node = null
+
+    //攻速
+    attack_speed_node:cc.Node = null;
+    attack_speed_check_node = null
+    attack_speed_grop_node = null
+    // 暴击
+    attack_crit_node = null
+    attack_crit_check_node = null
+    attack_crit_grop_node = null
+    
+    // 移动速度
+    move_speed_node = null
+    move_speed_check_node = null
+
+    skill_list = []
+    skill_node = null
+
+    // 攻击方式
+    attack_type_node = null
+    // 攻击敌人的个数
+    attack_number_node = null
+    attack_number_grop_node = null // 成长
+
+    // 攻击特效数值
+    attack_effnum_node = null
+    attack_effnum_grop_node = null
 
     start () {
 
-        this.addBox(UITYPE_ENUM.input, cc.v2(0, 100), "event_attack", "攻击")
-        this.addBox(UITYPE_ENUM.checkbox, cc.v2(100, 100), "open_attack", "打开攻击")
-  
+        // 
+        let height = cc.winSize.width/2
+        let sunb_H = 50
 
+        this.id_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_id, "ID")
+        
+        height = height - sunb_H
+
+        this.attack_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack, "攻击")
+        height = height - sunb_H
+
+        this.attack_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_grow, "攻击成长")
+        height = height - sunb_H
+
+        this.blood_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_blood, "血量")
+        height = height - sunb_H
+        this.blood_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_blood_grow, "血量成长")
+        height = height - sunb_H
+
+        this.defense_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_defense, "防御")
+        height = height - sunb_H
+        this.defence_check_node = this.addBox(UITYPE_ENUM.checkbox, cc.v2(0, height), UI_EVENT_TYPE.event_defense, "防御开关")
+        height = height - sunb_H
+        this.defense_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_defense_grow, "防御成长")
+        height = height - sunb_H
+
+        this.attack_speed_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_speed, "攻速")
+        height = height - sunb_H
+        this.attack_speed_check_node = this.addBox(UITYPE_ENUM.checkbox, cc.v2(0, height), UI_EVENT_TYPE.event_attack_speed, "攻速开关")
+        height = height - sunb_H
+        this.attack_speed_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_speed_grop, "攻速成长")
+        height = height - sunb_H
+
+        this.attack_crit_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_crit, "暴击")
+        height = height - sunb_H
+        this.attack_crit_check_node = this.addBox(UITYPE_ENUM.checkbox, cc.v2(0, height), UI_EVENT_TYPE.event_attack_crit, "暴击开关")
+        height = height - sunb_H
+        this.attack_crit_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_crit_grop, "暴击成长")
+        height = height - sunb_H
+
+        this.move_speed_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_move_speed, "移动")
+        height = height - sunb_H
+        this.move_speed_check_node = this.addBox(UITYPE_ENUM.checkbox, cc.v2(0, height), UI_EVENT_TYPE.event_move_speed, "移速开关")
+        height = height - sunb_H
+
+        this.skill_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_skill, "技能")
+        height = height - sunb_H
+
+        this.attack_type_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_type, "攻击方式")
+        height = height - sunb_H
+
+        this.attack_number_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_number, "攻击人数")
+        height = height - sunb_H
+        this.attack_number_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_number_grop, "攻击人数成长")
+        height = height - sunb_H
+
+        this.attack_effnum_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_effnum, "攻击特效")
+        height = height - sunb_H
+        this.attack_effnum_grop_node = this.addBox(UITYPE_ENUM.input, cc.v2(0, height), UI_EVENT_TYPE.event_attack_effnum_grop, "攻击特效成长")
+        height = height - sunb_H
     }
 
     onsave()
