@@ -1,21 +1,6 @@
 
-enum skill{
-    
 
-}
-enum attack_type{
-    NORMAL,
-
-
-}
-
-enum attack_spark_type
-{
-    NORMAL,
-    sustained
-
-}
-
+import {GAME} from './GameDefine'
 
 // 卡牌数据模型
 export interface CardModel{
@@ -26,9 +11,9 @@ export interface CardModel{
     attack_speed:number             // 攻击速度
     attack_crit:number              // 暴击
     move_speed:number               // move_speed 移动速度
-    skill:Array<skill>              // 拥有的技能
-    attack_type:attack_type         // 攻击方式
-    attack_spark:attack_spark_type  // 攻击触发类型
+    skill:Array<GAME.skill>              // 拥有的技能
+    attack_type:GAME.attack_type         // 攻击方式
+    attack_spark:GAME.attack_spark_type  // 攻击触发类型
     attack_number:number            // 攻击对象数 
     attack_effnum:number            // 攻击特效 每次的数值（毒/额外伤害/...d）
 
@@ -40,5 +25,4 @@ export interface CardModel{
     attack_crit_grop:number
     attack_number_grop:number
     attack_effnum_grop:number
-    
 }
