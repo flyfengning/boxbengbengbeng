@@ -21,103 +21,67 @@ const getkey = ()=>{
 
 const HeroDataManger:Map<string, any> = new Map()
 
-// id:number;                      // id
-// blood:number;                   // 血量 
-// attack:number                   // 攻击力
-// defense:number                  // 防御力
-// attack_speed:number             // 攻击速度
-// attack_crit:number              // 暴击
-// move_speed:number               // move_speed 移动速度
-// skill:Array<GAME.skill>              // 拥有的技能
-// attack_type:GAME.attack_type         // 攻击方式
-// attack_spark:GAME.attack_spark_type  // 攻击触发类型
-// attack_number:number            // 攻击对象数 
-// attack_effnum:number            // 攻击特效 每次的数值（毒/额外伤害/...d）
-
-// /************  成长属性 ****************/
-// blood_grow:number
-// attack_grow:number
-// defense_grow:number
-// attack_speed_grop:number
-// attack_crit_grop:number
-// attack_number_grop:number
-// attack_effnum_grop:number
-
 @ccclass
 export default class HeroBase extends cc.Component implements CardModel
 {
+    // action_tag 为action设立的tag值
     public tag_key:number = -1;
 
     // CardModel 基础的属性
-    id:number;                              // id
-    blood:number;                           // 血量 
-    attack:number                           // 攻击力
-    defense:number                          // 防御力
-    attack_speed:number                     // 攻击速度
-    attack_crit:number                      // 暴击几率
-    move_speed:number                       // move_speed 移动速度
-    skill:Array<GAME.skill>                 // 拥有的技能
-    attack_type:GAME.attack_type            // 攻击方式
-    attack_spark:GAME.attack_spark_type     // 攻击触发类型
-    attack_targets:number                   // 攻击对象数 
-    attack_effnum:number                    // 攻击特效 每次的数值（毒/额外伤害/...d）
+    id:number;                                                                  // id
+    nickname:string = "";                                                       // 名称                   
+    move_speed:number = 0                                                       // move_speed 移动速度
+    skill:Array<GAME.skill> = []                                                // 拥有的技能
+    attack_type:GAME.attack_type = GAME.attack_type.NORMAL                      // 攻击方式
+    attack_spark:GAME.attack_spark_type = GAME.attack_spark_type.NORMAL         // 攻击触发类型
+
+    // 下面这些属性都是动态计算的值(有计算公式决定)
+    blood:number = 0                           // 血量 
+    attack:number = 0                          // 攻击力
+    defense:number = 0                         // 防御力
+    attack_speed:number = 0                    // 攻击速度
+    attack_crit:number = 0                     // 暴击几率
+    attack_targets:number = 0                  // 攻击对象数
+    attack_effnum:number = 0                   // 攻击特效 每次的数值（毒/额外伤害/...d）
+
+    /************  base属性(对应的是成长增加的属性) ****************/
+    blood_base:number = 0
+    attack_base:number = 0
+    defense_base:number = 0
+    attack_speed_base:number = 0
+    attack_crit_base:number = 0
+    attack_targets_base:number = 0
+    attack_effnum_base:number = 0
 
     /************  成长属性 ****************/
-    blood_grow:number
-    attack_grow:number
-    defense_grow:number
-    attack_speed_grop:number
-    attack_crit_grop:number
-    attack_number_grop:number
-    attack_effnum_grop:number
+    blood_grow:number = 0
+    attack_grow:number = 0
+    defense_grow:number = 0
+    attack_speed_grop:number = 0
+    attack_crit_grop:number = 0
+    attack_targets_grop:number = 0
+    attack_effnum_grop:number = 0
 
     /************  升星属性 ****************/   
-    
-    blood_star:number;
-    attack_star:number;
-    defense_star:number;
-    attack_speed_star:number;
-    attack_crit_star:number;
-    attack_number_star:number;
-    attack_effnum_star:number;
-
-    // indx = GAME.max_attack_crit
-
-
-    ////////////////////////////基础属性//////////////////////////
-    // 血量
-    private blood_num_base:number = 0
-    // 攻击力
-    private attack_num_base:number = 0
-    // 防御力
-    private defense_num_base:number = 0
-    // 攻击速度 次/s
-    private attack_speed_base:number = 0
-    // 暴击几率
-    private attack_Crit_base:number = 0
-
-    // private attack_type:number = 0
+    blood_star:number = 0;
+    attack_star:number = 0;
+    defense_star:number = 0;
+    attack_speed_star:number = 0;
+    attack_crit_star:number = 0;
+    attack_targets_star:number = 0;
+    attack_effnum_star:number = 0;
 
     ////////////////////////////公用属性//////////////////////////
-    // 怪物名字
-    public name:string = ""
-    // 血量
-    public blood_num:number = 0
-    // 攻击力
-    public attack_num:number = 0
-    // 防御力
-    public defense_num:number = 0
     // 是否死亡
     public is_die:boolean = false;
-    // 拥有的技能
-    public skill_list:Array<GAME.skill> = [];
+    // 是否被激活，激活之后不允许更改基础属性
+    private is_active:boolean = false
+    // 对外接口是否活着
+    get is_alive(){return this.is_active}
     // 等级
     public lv_num:number = 0;
     // 星级
     public star_num:number = 0;
-    // 星级加成(攻击)
-    star_addition_blood:number = 10
-
 
     /***********游戏中的属性**********/
 
@@ -152,8 +116,15 @@ export default class HeroBase extends cc.Component implements CardModel
         return this.star_num
     }
 
-    loadDataByID(id:number, lv:number = 1, star:number = 1)
+    loadDataByID(id:number, lv:number = 1, star:number = 0)
     {  
+
+        if(this.is_alive)
+        {
+            cc.log("ERROR::当前节点已经被激活， 不能再次更改属性--------------------", this.nickname)
+            return
+        }
+
         this.tag_key = getkey()
         // cc.log("this.tag_key", this.tag_key)
 
@@ -187,7 +158,6 @@ export default class HeroBase extends cc.Component implements CardModel
             cc.resources.load(headPath, cc.SpriteFrame, ((error, spriteFrame)=>{
                 if(spriteFrame)
                 {
-                    // cc.
                     if(this.head_img)  // 子类需要实现， base里面是个空节点
                     {
                         this.head_img.spriteFrame = spriteFrame
@@ -198,7 +168,7 @@ export default class HeroBase extends cc.Component implements CardModel
 
         let load = ((jdata)=>{
             let data = jdata.json
-            this.resetHero(data.blood_num, data.attack_num, data.defense_num, data.attack_speed, lv, star)
+            this.resetHero(data, lv, star)
             this.name = data.name?data.name:"未知名字"
             // 预设速度
             this.move_speed = data.move_speed ? data.move_speed:0
@@ -252,13 +222,15 @@ export default class HeroBase extends cc.Component implements CardModel
     }
 
     // blood血量  attack攻击力 defense防御力 attack_speed攻击速度
-    resetHero(blood:number, attack:number, defense:number, attack_speed:number, lv:number=1, star:number=1)
-    {
+    resetHero(jdata, lv:number=1, star:number=0)
+    {   
+        // 激活节点
+        this.is_active = true
         // 这个是基数属性
-        this.blood_num_base = blood
-        this.attack_num_base = attack
-        this.defense_num_base = defense
-        this.attack_speed_base = attack_speed 
+        this.blood_base = jdata.blood
+        this.attack_base = jdata.attack
+        this.defense_base = jdata.defense
+        this.attack_speed_base = jdata.attack_speed 
         this.lv = lv
         this.star = star
         // 重新计算属性
@@ -267,16 +239,20 @@ export default class HeroBase extends cc.Component implements CardModel
 
     //重新计算属性
     calculate_property()
-    {
-        // 计算公式  基础*等级+星级加成
-        this.blood = this.blood_num_base * this.lv + this.star * this.star_addition_blood 
-        this.attack =  this.attack_num_base * this.lv + this.star * this.star_addition_blood 
-        this.defense_num = this.defense_num_base + this.lv *2 // 成长属性太高了
-        this.attack_speed = this.attack_speed_base * this.lv // 攻速注意设置上限
-    }
+    {   
+        // lv 默认为1  star 默认为0 
+        // 计算公式  基础 + 成长加成的 + 星级加成
 
-    onLoad()
-    {
+        let grop_lv = this.lv-1
+        let grop_star = this.star
+
+        this.blood = this.blood_base + this.blood_grow* (grop_lv) + grop_star * this.blood_star
+        this.attack =  this.attack_base + this.attack_grow * (grop_lv) + grop_star * this.attack_star // 血量需要判断是否是掉过血，然后再成长的
+        this.defense = this.defense_base + this.defense_grow * (grop_lv) + grop_star * this.defense_star
+        this.attack_speed = this.attack_speed_base + this.attack_speed_grop *(grop_lv) +  grop_star * this.attack_speed_star
+        this.attack_crit = this.attack_crit_base + this.attack_crit_grop * (grop_lv) + grop_star * this.attack_crit_star
+        this.attack_targets = this.attack_targets_base + this.attack_targets_grop * (grop_lv) + grop_star * this.attack_targets_star
+        this.attack_effnum = this.attack_effnum_base + this.attack_effnum_grop * grop_lv + grop_star * this.attack_effnum_star
 
     }
 
@@ -292,11 +268,15 @@ export default class HeroBase extends cc.Component implements CardModel
         {
             return 
         }
-        hit_number -= this.defense_num
+        hit_number -= this.defense
         hit_number = hit_number < 0? 0 : hit_number
         this.blood -= hit_number
         this.on_hit(hit_number)
-        if(this.blood_num< 0)
+        // 受击触发。。。
+
+
+
+        if(this.blood < 0)
         {
             this.on_die_base()
         }
@@ -305,7 +285,7 @@ export default class HeroBase extends cc.Component implements CardModel
     // 回血
     on_blood_back_base(blood:number)
     {
-        this.blood_num += blood
+        this.blood += blood
         this.on_blood_back()
     } 
 

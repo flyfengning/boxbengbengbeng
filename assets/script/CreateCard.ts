@@ -89,6 +89,7 @@ export default class NewClass extends cc.Component {
 
     card_def: CardModel = 
     {
+        nickname:"",
         id:0,                           // id
         blood:0,                        // 血量 
         attack:0,                       // 攻击力
@@ -108,7 +109,7 @@ export default class NewClass extends cc.Component {
         defense_grow:0,
         attack_speed_grop:0,
         attack_crit_grop:0,
-        attack_number_grop:0,
+        attack_targets_grop:0,
         attack_effnum_grop:0,
     }
 

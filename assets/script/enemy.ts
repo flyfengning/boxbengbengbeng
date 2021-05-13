@@ -36,11 +36,11 @@ export default class enemy extends HeroBase {
     start() {
         // this.attack_num
         //血量
-        this.blood_volume.string = String(this.blood_num)
+        this.blood_volume.string = String(this.blood)
     }
 
     on_hit(hit_number:number){
-        this.blood_volume.string = String(this.blood_num)
+        this.blood_volume.string = String(this.blood)
 
         let tips = cc.instantiate(this.tips_num)
         tips.active = true
@@ -74,7 +74,7 @@ export default class enemy extends HeroBase {
 
     refush()
     {
-        this.blood_volume.string = String(this.blood_num)
+        this.blood_volume.string = String(this.blood)
     }
 
     move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)

@@ -4,6 +4,7 @@ import {GAME} from './GameDefine'
 
 // 卡牌数据模型
 export interface CardModel{
+    nickname:string;                            // 名字
     id:number;                              // id
     blood:number;                           // 血量 
     attack:number                           // 攻击力
@@ -24,6 +25,6 @@ export interface CardModel{
     defense_grow:number
     attack_speed_grop:number
     attack_crit_grop:number
-    attack_number_grop:number
+    attack_targets_grop:number
     attack_effnum_grop:number
 }
