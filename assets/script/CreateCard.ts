@@ -90,18 +90,18 @@ export default class NewClass extends cc.Component {
     card_def: CardModel = 
     {
         nickname:"",
-        id:0,                           // id
-        blood:0,                        // 血量 
-        attack:0,                       // 攻击力
-        defense:0,                      // 防御力
-        attack_speed:0,                 // 攻击速度
-        attack_crit:0,                  // 暴击
-        move_speed:0 ,                  // move_speed 移动速度
-        skill : [],                       // 拥有的技能
+        id:0,                               // id
+        blood:0,                            // 血量 
+        attack:0,                           // 攻击力
+        defense:0,                          // 防御力
+        attack_speed:0,                     // 攻击速度
+        attack_crit:0,                      // 暴击
+        move_speed:0 ,                      // move_speed 移动速度
+        skill : [],                         // 拥有的技能
         attack_type:GAME.attack_type.NORMAL,        // 攻击方式
         attack_spark:GAME.attack_spark_type.NORMAL,  // 攻击触发类型
-        attack_targets:0,                    // 攻击对象数 
-        attack_effnum:0,                // 攻击特效 每次的数值（毒/额外伤害/...d）
+        attack_targets:0,                   // 攻击对象数 
+        attack_effnum:0,                    // 攻击特效 每次的数值（毒/额外伤害/...d）
     
         /************  成长属性 ****************/
         blood_grow:0,
@@ -122,9 +122,6 @@ export default class NewClass extends cc.Component {
     {
         for(let i = 0; i < key.length; i++)
         {
-            // this.node.on(UI_EVENT_TYPE.get(key[i]), (event)=>{
-            //     cc.log("event", event.getEventName(), event.getUserData()) 
-            // }, this)
             this.node.on(UI_EVENT_TYPE.get(key[i]), (event)=>this.onEvent(event))
         }  
     }
@@ -133,6 +130,8 @@ export default class NewClass extends cc.Component {
     onEvent(event:cc.Event.EventCustom)
     {
         cc.log("onEvent-->>>>", event.getEventName(), event.getUserData())
+        // this[event.getEventName()] = event.getUserData()
+
     }
 
 
