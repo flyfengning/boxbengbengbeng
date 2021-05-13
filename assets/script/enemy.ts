@@ -34,7 +34,6 @@ export default class enemy extends HeroBase {
     }
 
     start() {
-        // this.attack_num
         //血量
         this.blood_volume.string = String(this.blood)
     }

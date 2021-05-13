@@ -227,10 +227,21 @@ export default class HeroBase extends cc.Component implements CardModel
         // 激活节点
         this.is_active = true
         // 这个是基数属性
-        this.blood_base = jdata.blood
-        this.attack_base = jdata.attack
-        this.defense_base = jdata.defense
-        this.attack_speed_base = jdata.attack_speed 
+        this.blood_base = jdata.blood?jdata.blood:0
+        this.attack_base = jdata.attack?jdata.attack:0
+        this.defense_base = jdata.defense?jdata.defense:0
+        this.attack_speed_base = jdata.attack_speed?jdata.attack_speed:0
+        this.attack_crit_base = jdata.attack_crit?jdata.attack_crit:0
+        this.attack_targets_base = jdata.attack_targets?jdata.attack_targets:0
+        this.attack_effnum_base = jdata.attack_effnum?jdata.attack_effnum:0
+
+        this.id = jdata.id
+        this.nickname = jdata.nickname
+        this.move_speed = jdata.move_speed?jdata.move_speed:0
+        // this.skill = // 需要加载
+        this.attack_type = jdata.attack_type
+        this.attack_spark = jdata.attack_spark
+
         this.lv = lv
         this.star = star
         // 重新计算属性
@@ -253,7 +264,6 @@ export default class HeroBase extends cc.Component implements CardModel
         this.attack_crit = this.attack_crit_base + this.attack_crit_grop * (grop_lv) + grop_star * this.attack_crit_star
         this.attack_targets = this.attack_targets_base + this.attack_targets_grop * (grop_lv) + grop_star * this.attack_targets_star
         this.attack_effnum = this.attack_effnum_base + this.attack_effnum_grop * grop_lv + grop_star * this.attack_effnum_star
-
     }
 
     start()

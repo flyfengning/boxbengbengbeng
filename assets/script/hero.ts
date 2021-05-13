@@ -128,7 +128,7 @@ export default class hero extends HeroBase {
                     y:0
                 }),
                 cc.tween(bullet).call(function(){
-                    target.getComponent("enemy").on_hit_base(this.attack_num)
+                    target.getComponent("enemy").on_hit_base(this.attack)
                     bullet.removeFromParent()
                 }.bind(this))
             ).start()
