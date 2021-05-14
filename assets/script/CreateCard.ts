@@ -130,8 +130,20 @@ export default class NewClass extends cc.Component {
     onEvent(event:cc.Event.EventCustom)
     {
         cc.log("onEvent-->>>>", event.getEventName(), event.getUserData())
-        // this[event.getEventName()] = event.getUserData()
+        let name = event.getEventName()
+        let keys = name.split("_")
 
+        if (keys[1] != "skill" )
+        {
+
+            this.card_def[keys[1]] = Number(event.getUserData())
+            cc.log("this[event.getEventName()] ", this.card_def[keys[1]], keys[1])
+            cc.log(this.card_def)
+        }
+        else
+        {
+
+        }
     }
 
 
