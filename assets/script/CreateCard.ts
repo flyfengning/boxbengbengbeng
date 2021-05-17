@@ -133,7 +133,7 @@ export default class NewClass extends cc.Component {
         let name = event.getEventName()
         let keys = name.split("_")
 
-        if (keys[1] != "skill" )
+        if (keys[1] != "skill")
         {
 
             this.card_def[keys[1]] = Number(event.getUserData())
