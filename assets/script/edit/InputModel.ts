@@ -19,6 +19,17 @@ export default class NewClass extends UIModel {
     {
         return this.input_.string
     }
+
+    set string(_str)
+    {
+        this.input_.string = _str
+    }
+
+    get string()
+    {
+        return this.input_.string
+    }
+
     // 定义下回调属性
     start () {
 

@@ -17,10 +17,10 @@
   "fit-height": true,
   "use-project-simulator-setting": true,
   "simulator-orientation": false,
-  "use-customize-simulator": true,
+  "use-customize-simulator": false,
   "simulator-resolution": {
-    "height": 960,
-    "width": 640
+    "height": 1334,
+    "width": 750
   },
   "clear-simulator-cache": true,
   "facebook": {

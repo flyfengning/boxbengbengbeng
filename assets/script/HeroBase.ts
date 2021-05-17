@@ -53,6 +53,8 @@ export default class HeroBase extends cc.Component implements CardModel
     attack_targets_base:number = 0
     attack_effnum_base:number = 0
 
+    attack_number:number = 0
+
     /************  成长属性 ****************/
     blood_grow:number = 0
     attack_grow:number = 0
@@ -61,6 +63,7 @@ export default class HeroBase extends cc.Component implements CardModel
     attack_crit_grop:number = 0
     attack_targets_grop:number = 0
     attack_effnum_grop:number = 0
+    attack_number_grop:number = 0
 
     /************  升星属性 ****************/   
     blood_star:number = 0;
