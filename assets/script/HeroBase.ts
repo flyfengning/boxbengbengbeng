@@ -87,7 +87,6 @@ export default class HeroBase extends cc.Component implements CardModel
     public star_num:number = 0;
 
     /***********游戏中的属性**********/
-
     // 减速属性
     public move_retard:number = 0
 
@@ -134,11 +133,11 @@ export default class HeroBase extends cc.Component implements CardModel
         let resPath = ""
         if (Math.floor(id/1000) == 2)
         {
-            resPath = "herodata/hero_" + String(id)
+            resPath = "herodata/" + String(id)
         }
         else
         {
-            resPath = "herodata/enemy_" + String(id)
+            resPath = "herodata/" + String(id)
         }
 
         let headPath = "node/fight_" + String(id)
@@ -172,12 +171,9 @@ export default class HeroBase extends cc.Component implements CardModel
         let load = ((jdata)=>{
             let data = jdata.json
             this.resetHero(data, lv, star)
-            this.name = data.name?data.name:"未知名字"
-            // 预设速度
-            this.move_speed = data.move_speed ? data.move_speed:0
             // 减速
             this.move_retard = 0
-            this.refush()
+            this.refush() // 刷新界面，ui需要
         }).bind(this)
 
         if(HeroDataManger.has(resPath))
@@ -237,9 +233,20 @@ export default class HeroBase extends cc.Component implements CardModel
         this.attack_crit_base = jdata.attack_crit?jdata.attack_crit:0
         this.attack_targets_base = jdata.attack_targets?jdata.attack_targets:0
         this.attack_effnum_base = jdata.attack_effnum?jdata.attack_effnum:0
+        this.attack_number = jdata.attack_number?jdata.attack_number:1
+        // /************  成长属性 ****************/
+        this.blood_grow = jdata.blood_grow?jdata.blood_grow:0
+        this.attack_grow = jdata.attack_grow?jdata.attack_grow:0
+        this.defense_grow = jdata.defense_grow?jdata.defense_grow:0
+        this.attack_speed_grop = jdata.attack_speed_grop?jdata.attack_speed_grop:0
+        this.attack_crit_grop = jdata.attack_crit_grop?jdata.attack_crit_grop:0
+        this.attack_targets_grop = jdata.attack_targets_grop?jdata.attack_targets_grop:0
+        this.attack_effnum_grop = jdata.attack_effnum_grop?jdata.attack_effnum_grop:0
+        this.attack_number_grop = jdata.attack_number_grop?jdata.attack_number_grop:0
 
         this.id = jdata.id
-        this.nickname = jdata.nickname
+
+        this.nickname = jdata.nickname?jdata.nickname:"没有名字"
         this.move_speed = jdata.move_speed?jdata.move_speed:0
         // this.skill = // 需要加载
         this.attack_type = jdata.attack_type
@@ -249,6 +256,10 @@ export default class HeroBase extends cc.Component implements CardModel
         this.star = star
         // 重新计算属性
         this.calculate_property()
+
+        cc.log("---------------------------------------")
+        cc.log("id:", this.id, this)
+        cc.log("---------------------------------------")
     }
 
     //重新计算属性
@@ -275,16 +286,21 @@ export default class HeroBase extends cc.Component implements CardModel
     }
 
     // 受击
-    on_hit_base(hit_number:number)
+    on_hit(hit_number:number)
     {
         if(this.is_die)
         {
             return 
         }
+
+        // attack_crit
+
+
+
         hit_number -= this.defense
         hit_number = hit_number < 0? 0 : hit_number
         this.blood -= hit_number
-        this.on_hit(hit_number)
+        // this.on_show_hit(hit_number)
         // 受击触发。。。
 
 
@@ -293,6 +309,8 @@ export default class HeroBase extends cc.Component implements CardModel
         {
             this.on_die_base()
         }
+
+        this.on_show_hit(hit_number)
     } 
 
     // 回血
@@ -309,7 +327,7 @@ export default class HeroBase extends cc.Component implements CardModel
         this.on_die()
     }
 
-    on_hit(hit_number:number){
+    on_show_hit(hit_number:number){
         cc.log("ERROR:Need to rewrite this method function name: HeroBase:on_hit")
     }
     on_blood_back(){

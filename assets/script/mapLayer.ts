@@ -44,7 +44,7 @@ export default class NewClass extends cc.Component {
     select_index:number = -1
 
     // 英雄取值范围
-    public hero_range:Array<number> = []
+    public hero_range:Array<number> = [2001]
     // 英雄列表(@注意不是顺序的，中间有空的)
     public hero_list:Array<cc.Node> = []
     // 怪物列表
@@ -52,18 +52,20 @@ export default class NewClass extends cc.Component {
     // 地图块列表
     public map_list:Array<cc.Node> = []
     // 间隔时间
-    public interval_time:number = 15
-    // 波数
+    public interval_time:number = 20
+    // 现在统计的时间
+    public timeCount:number = 0;
+    // 波数(对于怪物来说这是lv)
     public group_count:number = 0
 
     // 总金币数
-    _gold_num:number = 10
+    _gold_num:number = 100000
     // 生成所需要数
     _genner_num:number = 10
     //生成之后增加的金币数
     _genner_add_num:number = 10
     // 每个敌人(小怪)多少钱
-    _enemy_s_gold = 10
+    _enemy_s_gold = 1000
     // 每个敌人(精英)多少钱
     _enemy_m_gold = 10    
     // 每个敌人(boss)多少钱
@@ -114,12 +116,12 @@ export default class NewClass extends cc.Component {
             }
         }).bind(this))
 
-        this.hero_range.push(2001)
-        this.hero_range.push(2002)
-        this.hero_range.push(2003)
-        this.hero_range.push(2004)
+        // this.hero_range.push(2001)
+        // this.hero_range.push(2002)
+        // this.hero_range.push(2003)
+        // this.hero_range.push(2004)
         this.init_map()
-        this.gold_num = 10
+        this.gold_num = 1000
         this.start_emety()
     }
 
@@ -171,13 +173,13 @@ export default class NewClass extends cc.Component {
     start_emety()
     {
         // 计时开始怪物
-        let timeCount = this.interval_time - 5 // 第一次是5s出兵
+        this.timeCount = this.interval_time - 5 // 第一次是5s出兵
         cc.tween(this)
             .call((()=>{
-                timeCount++;
-                if (timeCount >= this.interval_time)
+                this.timeCount++;
+                if (this.timeCount >= this.interval_time)
                 {
-                    timeCount = 0
+                    this.timeCount = 0
                     this.addListEnemy()
                 }
             }).bind(this))
@@ -186,6 +188,12 @@ export default class NewClass extends cc.Component {
             .repeatForever()
             .tag(123)
             .start()
+    }
+
+    // 设置时间， 更改2s之后开始下一波
+    next_emety()
+    {   
+        this.timeCount = this.interval_time - 2
     }
 
     stop_emety()
@@ -202,22 +210,24 @@ export default class NewClass extends cc.Component {
     // 生成一波怪物
     addListEnemy()
     {
-        let list:Array<number> = [1001, 1002, 1003, 1004, 1005]
+        // let list:Array<number> = [1001, 1002, 1003, 1004, 1005]
+        let list:Array<number> = [1001]
         // 当前的波数
         this.group_count ++;
 
         this.group_label.string = "第" + this.group_count + "波"
 
+        // if(this.group_count >= 10)
+        // {   
+        //     // 超过10层， 超过的波数每5波增加数量1
+        //     for(let i = 0; i < this.group_count/5-1; i++)
+        //     {
+        //         let index = Math.floor(Math.random() * 100) % 5
+        //         list.push(list[index]) 
+        //     }
+        // }
 
-        if(this.group_count >= 10)
-        {   
-            // 超过10层， 超过的波数每5波增加数量1
-            for(let i = 0; i < this.group_count/5-1; i++)
-            {
-                let index = Math.floor(Math.random() * 100) % 5
-                list.push(list[index]) 
-            }
-        }
+        cc.log("list.length", list.length)
 
         let pos:cc.Vec2 = this.getBeginPos()
         let temp = []
@@ -258,7 +268,7 @@ export default class NewClass extends cc.Component {
                 let nowIndex = 0
                 let p1 = this.map_list[nowIndex].getPosition()
                 let p2 = this.map_list[++nowIndex].getPosition()
-                
+
                 node.scale = 0.5
                 let getNext = (()=>{
                     let tempindex = nowIndex + 1
@@ -433,6 +443,11 @@ export default class NewClass extends cc.Component {
 
         this.add_gold_num(this._enemy_s_gold)
 
+        // 查看是否还有怪物
+        if(this.enemy_list.length == 0)
+        {
+            this.next_emety()
+        }
     }
 
     // 停止游戏
@@ -448,7 +463,7 @@ export default class NewClass extends cc.Component {
         })
         // 停止生成
         this.stop_emety()
-
+        // 结算界面
         this.showResult()
     }
 
@@ -456,6 +471,7 @@ export default class NewClass extends cc.Component {
     {
         this.result_bg.node.active = true
         let result = this.result_bg.getComponent("Result")
+
     }
 
     // update (dt) {}

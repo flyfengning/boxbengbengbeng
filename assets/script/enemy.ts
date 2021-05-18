@@ -9,6 +9,7 @@ const {ccclass, property} = cc._decorator;
 import HeroBase from "./HeroBase"
 
 import {calc_angle} from "./GlobalFunc"
+import { GAME } from "./GameDefine";
 
 @ccclass
 export default class enemy extends HeroBase {
@@ -38,7 +39,10 @@ export default class enemy extends HeroBase {
         this.blood_volume.string = String(this.blood)
     }
 
-    on_hit(hit_number:number){
+    on_show_hit(hit_number:number){
+
+        // GAME.attack_spark_type
+        // 基类算数值
         this.blood_volume.string = String(this.blood)
 
         let tips = cc.instantiate(this.tips_num)
@@ -50,14 +54,12 @@ export default class enemy extends HeroBase {
         cc.tween(tips).by(0.3, {y:15, opacity:50})
         .removeSelf()
         .start()
-
-        // 24.816
     }
     on_blood_back(){
         cc.log("enemy:on_blood_back")
     }
     on_die(){
-        cc.log("enemy:on_die", this.name)
+        cc.log("enemy:on_die", this.nickname)
         this.map.kill_enemy(this)
         // this.map.enemy_list.
         // for(let i = 0; i < this.map.enemy_list.length; i++)

@@ -4,7 +4,7 @@ import {GAME} from './GameDefine'
 
 // 卡牌数据模型
 export interface CardModel{
-    nickname:string;                            // 名字
+    nickname:string;                        // 名字
     id:number;                              // id
     blood:number;                           // 血量 
     attack:number                           // 攻击力

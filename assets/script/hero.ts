@@ -31,10 +31,9 @@ export default class hero extends HeroBase {
     lv_label:cc.Label = null;
 
     start() {
-        let self = this
         cc.tween(this.node)
-        .delay(0.1)
-        .call(this.findEmety.bind(self))
+        .delay(0.05) // 攻速上限？(20次)
+        .call(this.findEmety.bind(this))
         .union()
         .repeatForever()
         .tag(Number(this.tag_key + "" + this.attack_tag))
@@ -87,22 +86,22 @@ export default class hero extends HeroBase {
             return
         }
         
-        
         this.is_can_attack = false
         let self = this
-        cc.tween(this.node)
-        .delay(1/this.attack_speed)
-        .call(function(){
-            this.is_can_attack = true
-        }.bind(self))
-        .tag(123213)
-        .start()
-
+        if(this.attack_speed > 0)
+        {
+            cc.tween(this.node)
+            .delay(1/this.attack_speed)
+            .call(function(){
+                this.is_can_attack = true
+            }.bind(self))
+            .tag(123213)
+            .start()
+        }
         // 本地发射子弹到对方
-        // target
         this.create_one_bullet(target)
     }
-
+ 
     create_one_bullet(target:cc.Node)
     {
         cc.resources.load("Prefab/bullet", cc.Prefab, ((errorMessage, loadedResource)=>{
@@ -128,7 +127,7 @@ export default class hero extends HeroBase {
                     y:0
                 }),
                 cc.tween(bullet).call(function(){
-                    target.getComponent("enemy").on_hit_base(this.attack)
+                    target.getComponent("enemy").on_hit(this.attack)
                     bullet.removeFromParent()
                 }.bind(this))
             ).start()

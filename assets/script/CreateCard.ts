@@ -76,6 +76,9 @@ export default class NewClass extends cc.Component {
 
     card_def: CardModel = this.resetData()
 
+
+    write_path:string = "E:/flytest/box_beng/assets/resources/herodata/"
+
     resetData():CardModel
     {
         return {
@@ -126,19 +129,41 @@ export default class NewClass extends cc.Component {
         cc.log("onEvent-->>>>", event.getEventName(), event.getUserData())
         let name = event.getEventName()
         let keys = name.split("event_")
+
+
+        let type = typeof(this.card_def[keys[1]])
+
+        cc.log("type=>>>>>>>", type)
        
-        if (keys[1] != "skill")
+        if(keys[1] == "id")
         {
-            this.card_def[keys[1]] = Number(event.getUserData())
-            cc.log("this[event.getEventName()] ", this.card_def[keys[1]], keys[1])
-            cc.log(this.card_def)
+            
+            this.card_def[keys[1]] = event.getUserData()
+            // event_id onload
+            this.loadFile()
+        }
+        
+        if (keys[1] == "nickname")
+        {
+            this.card_def[keys[1]] = <string>(event.getUserData())
+        }
+        else if (keys[1] == "skill" )
+        {
+            let sk = event.getUserData().split(",")
+            this.card_def.skill = []
+            for(let k = 1; k < sk.length; k++)
+            {   
+                if(<GAME.skill>sk[k])
+                {
+                    this.card_def.skill.push(<GAME.skill>sk[k])
+                }
+            }
         }
         else
         {
-
+            this.card_def[keys[1]] = Number(event.getUserData())
         }
     }
-
 
     addBox(type:UITYPE_ENUM, pos:cc.Vec2, event:string, btn_name:string, onoff?:boolean)
     {
@@ -171,8 +196,6 @@ export default class NewClass extends cc.Component {
             model.btn_name = btn_name
             btn_atk.on("loadfile", (()=>{
                 let keys = event.split("event_")
-                cc.log("------------------loadfile", event, keys)
-                
                 model.string = String(this.card_def[keys[1]]) 
             }).bind(this))
             this.input_node_list.push(btn_atk)
@@ -314,17 +337,15 @@ export default class NewClass extends cc.Component {
         if(jsb)
         {
             let fileUtils = jsb.fileUtils
-            if(0)
-            {
-                cc.log("测试0")
-            }
+
             if(!this.card_def.id)
             {
                 cc.log("没有设置ID")
                 return
             }
-            let path = "E:/flytest/box_beng/assets/resources/herodata/"
+            let path = this.write_path
             let fileName = path + this.card_def.id + ".json"
+
             if (fileUtils.isFileExist(fileName))
             {
                 let str = fileUtils.getStringFromFile(fileName)
@@ -357,17 +378,34 @@ export default class NewClass extends cc.Component {
         if(jsb)
         {   
             let fileUtils = jsb.fileUtils
+
+            for (var vue in this.card_def)
+            {
+                if(vue != "skill" && vue != "nickname")
+                {
+                    this.card_def[vue] = Number(this.card_def[vue])
+                }
+            } 
+
             let str = JSON.stringify(this.card_def)
-            let path = "E:/flytest/box_beng/assets/resources/herodata/"
+            let path = this.write_path
             let fileName = path + this.card_def.id + ".json"
-            if (fileUtils.isFileExist(fileName))
-            {
-                cc.log("当前已存在同名文件")
-            }
-            else
-            {
-                jsb.fileUtils.writeStringToFile(str, fileName)
-            }
+
+
+            cc.log("this.card_def", this.card_def)
+
+            cc.log(fileName, "---->>>>>>开始保存")
+
+            // if (fileUtils.isFileExist(fileName))
+            // {
+            //     cc.log("当前已存在同名文件")
+            // }
+            // else
+            // {
+            fileUtils.writeStringToFile(str, fileName)
+
+            cc.log(fileName, "----->>>>>>保存完成")
+            // }
         }
         else
         {
