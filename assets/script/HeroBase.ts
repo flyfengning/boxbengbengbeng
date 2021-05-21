@@ -285,32 +285,45 @@ export default class HeroBase extends cc.Component implements CardModel
         
     }
 
+    rand_crit():boolean
+    {
+        let num = Math.random()*10000
+        if (num <= this.attack_crit)
+        {
+            return true
+        } 
+        return false
+    }
+    // attack_crit
+
     // 受击
-    on_hit(hit_number:number)
+    on_hit(hit_data:GAME.HitData)
     {
         if(this.is_die)
         {
             return 
         }
 
-        // attack_crit
-
-
+        let hit_number = hit_data.hit_number
+        // 判断暴击
+        if(hit_data.is_crit)
+        {
+            hit_number = hit_number * 2
+        }
 
         hit_number -= this.defense
         hit_number = hit_number < 0? 0 : hit_number
+
         this.blood -= hit_number
-        // this.on_show_hit(hit_number)
-        // 受击触发。。。
 
-
+        hit_data.hit_damage = hit_number
 
         if(this.blood < 0)
         {
             this.on_die_base()
         }
 
-        this.on_show_hit(hit_number)
+        this.on_show_hit(hit_data)
     } 
 
     // 回血
@@ -327,7 +340,7 @@ export default class HeroBase extends cc.Component implements CardModel
         this.on_die()
     }
 
-    on_show_hit(hit_number:number){
+    on_show_hit(hit_number:GAME.HitData){
         cc.log("ERROR:Need to rewrite this method function name: HeroBase:on_hit")
     }
     on_blood_back(){

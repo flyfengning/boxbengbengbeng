@@ -7,6 +7,7 @@
 
 const {ccclass, property} = cc._decorator;
 
+import { GAME } from "./GameDefine";
 import HeroBase from "./HeroBase"
 
 
@@ -58,24 +59,37 @@ export default class hero extends HeroBase {
             return
         }
         // cc.log('this.map.enemy_list.length', this.map.enemy_list.length)
-        let emety:cc.Node = null
+        let emety:cc.Node[] = []
+
+        switch(this.attack_type)
+        {
+            case GAME.attack_type.NORMAL:
+            {
+
+                break
+            }
+            
+        }
+
+
         for(let i = 0; i < this.map.enemy_list.length; i++)
         {
-            emety = this.map.enemy_list[i]
-            if(emety.getComponent("enemy").is_die == false)
+            let temp = this.map.enemy_list[i]
+            if(temp.getComponent("enemy").is_die == false)
             {
+                emety.push(temp)
                 break
             }
         }
-        if(emety && emety.getComponent("enemy").is_die == false)
-        {
-            this.onAttack(emety)
-        }
-        else
-        {
-            // this.node.stopActionByTag(this.attack_tag)
-            cc.Tween.stopAllByTag(this.attack_tag)
-        }
+        // if(emety && emety.getComponent("enemy").is_die == false)
+        // {
+        //     this.onAttack(emety)
+        // }
+        // else
+        // {
+        //     // this.node.stopActionByTag(this.attack_tag)
+        //     cc.Tween.stopAllByTag(this.attack_tag)
+        // }
     }
 
     // 攻击
@@ -85,7 +99,23 @@ export default class hero extends HeroBase {
         {
             return
         }
-        
+
+        // target:HeroBase         // 释放对象
+        // is_crit:boolean         // 是否暴击
+        // hit_number:number       // 攻击数值
+        // hit_type:attack_type    // 攻击类型
+        // hit_Proba:number        // 取值概率
+        // hit_target_count        // 攻击人数
+
+        let data = <GAME.HitData>{}
+        data.target = this
+        data.hit_type = this.attack_type
+        data.hit_number = this.attack
+        data.is_crit = this.rand_crit()
+        data.hit_proba = this.attack_crit // 暴击率
+        data.hit_target_count = this.attack_number // 攻击人数
+        data.hit_damage = 0             // 先设置成0
+
         this.is_can_attack = false
         let self = this
         if(this.attack_speed > 0)
@@ -97,12 +127,12 @@ export default class hero extends HeroBase {
             }.bind(self))
             .tag(123213)
             .start()
+            // 本地发射子弹到对方
+            this.create_one_bullet(target, data)
         }
-        // 本地发射子弹到对方
-        this.create_one_bullet(target)
     }
  
-    create_one_bullet(target:cc.Node)
+    create_one_bullet(target:cc.Node, hit_data:GAME.HitData)
     {
         cc.resources.load("Prefab/bullet", cc.Prefab, ((errorMessage, loadedResource)=>{
             if( !( loadedResource instanceof cc.Prefab ) ) { cc.log( 'Prefab error', errorMessage, loadedResource); return; } 
@@ -127,14 +157,14 @@ export default class hero extends HeroBase {
                     y:0
                 }),
                 cc.tween(bullet).call(function(){
-                    target.getComponent("enemy").on_hit(this.attack)
+                    target.getComponent("enemy").on_hit(hit_data)
                     bullet.removeFromParent()
                 }.bind(this))
             ).start()
         }).bind(this))
 
     }
-    on_hit(hit_number:number){
+    on_hit(data:GAME.HitData){
         cc.log("Hero:on_hit")
     }
     on_blood_back(){

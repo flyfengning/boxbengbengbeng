@@ -10,7 +10,7 @@ export interface CardModel{
     attack:number                           // 攻击力
     defense:number                          // 防御力
     attack_speed:number                     // 攻击速度(0-60)
-    attack_crit:number                      // 暴击(0-100)
+    attack_crit:number                      // 暴击(0-1000)
     move_speed:number                       // move_speed 移动速度
     skill:Array<GAME.skill>                 // 拥有的技能
     attack_type:GAME.attack_type            // 攻击方式

@@ -39,7 +39,7 @@ export default class enemy extends HeroBase {
         this.blood_volume.string = String(this.blood)
     }
 
-    on_show_hit(hit_number:number){
+    on_show_hit(hit_data:GAME.HitData){
 
         // GAME.attack_spark_type
         // 基类算数值
@@ -48,7 +48,15 @@ export default class enemy extends HeroBase {
         let tips = cc.instantiate(this.tips_num)
         tips.active = true
         tips.parent = this.node
-        tips.getComponent(cc.Label).string = hit_number + ""
+        tips.getComponent(cc.Label).string = hit_data.hit_damage + ""
+
+        tips.color = hit_data.is_crit == false?cc.color(255, 255, 255):cc.color(255, 0, 0)
+        if(hit_data.is_crit)
+        {
+            tips.scale = 1.5
+            tips.getComponent(cc.Label).enableBold = true
+        }
+
         tips.x = this.node.width / 3 * (-1) + Math.floor(Math.random() * 100 %(this.node.width/3*2)) 
         tips.y = 24
         cc.tween(tips).by(0.3, {y:15, opacity:50})

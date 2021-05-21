@@ -5,7 +5,7 @@
     "attack": 100,
     "defense": 0,
     "attack_speed": 1,
-    "attack_crit": 50,
+    "attack_crit": 5000,
     "move_speed": 0,
     "skill": [],
     "attack_type": 0,
