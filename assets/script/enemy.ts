@@ -116,7 +116,7 @@ export default class enemy extends HeroBase {
             this.node.x += subx
             this.node.y += suby
             // cc.log("***********subx, subx", tempSped, subx, suby, this.node.x, this.node.y, p2.x, p2.y)
-            if(Math.abs(this.node.x - p2.x) <= 2 && Math.abs(this.node.y - p2.y) <= 2 )
+            if(Math.abs(this.node.x - p2.x) <= 1 && Math.abs(this.node.y - p2.y) <= 1 )
             {
                 cc.Tween.stopAllByTag(Number(tag)) // 先干掉动作
                 if(callBack)

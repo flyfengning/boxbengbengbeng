@@ -13,6 +13,7 @@ const {ccclass, property} = cc._decorator;
 
 import {CardModel} from "./CardModel";
 import {GAME} from './GameDefine'
+import { TagMg } from "./TagManger";
 
 let key = 1
 const getkey = ()=>{
@@ -53,6 +54,8 @@ export default class HeroBase extends cc.Component implements CardModel
     attack_targets_base:number = 0
     attack_effnum_base:number = 0
 
+    attack_number_base = 0
+
     attack_number:number = 0
 
     /************  成长属性 ****************/
@@ -74,13 +77,19 @@ export default class HeroBase extends cc.Component implements CardModel
     attack_targets_star:number = 0;
     attack_effnum_star:number = 0;
 
-    ////////////////////////////公用属性//////////////////////////
+    /**************自身状态******************/
     // 是否死亡
     public is_die:boolean = false;
     // 是否被激活，激活之后不允许更改基础属性
     private is_active:boolean = false
     // 对外接口是否活着
     get is_alive(){return this.is_active}
+
+    // 是否可以释放技能
+    is_can_skill = true
+
+
+    ////////////////////////////公用属性//////////////////////////
     // 等级
     public lv_num:number = 0;
     // 星级
@@ -233,7 +242,7 @@ export default class HeroBase extends cc.Component implements CardModel
         this.attack_crit_base = jdata.attack_crit?jdata.attack_crit:0
         this.attack_targets_base = jdata.attack_targets?jdata.attack_targets:0
         this.attack_effnum_base = jdata.attack_effnum?jdata.attack_effnum:0
-        this.attack_number = jdata.attack_number?jdata.attack_number:1
+        this.attack_number_base = jdata.attack_number?jdata.attack_number:1
         // /************  成长属性 ****************/
         this.blood_grow = jdata.blood_grow?jdata.blood_grow:0
         this.attack_grow = jdata.attack_grow?jdata.attack_grow:0
@@ -249,6 +258,9 @@ export default class HeroBase extends cc.Component implements CardModel
         this.nickname = jdata.nickname?jdata.nickname:"没有名字"
         this.move_speed = jdata.move_speed?jdata.move_speed:0
         // this.skill = // 需要加载
+        jdata.skill.forEach(skill => {
+            this.skill.push(<GAME.skill>skill)
+        });
         this.attack_type = jdata.attack_type
         this.attack_spark = jdata.attack_spark
 
@@ -278,6 +290,7 @@ export default class HeroBase extends cc.Component implements CardModel
         this.attack_crit = this.attack_crit_base + this.attack_crit_grop * (grop_lv) + grop_star * this.attack_crit_star
         this.attack_targets = this.attack_targets_base + this.attack_targets_grop * (grop_lv) + grop_star * this.attack_targets_star
         this.attack_effnum = this.attack_effnum_base + this.attack_effnum_grop * grop_lv + grop_star * this.attack_effnum_star
+        this.attack_number = this.attack_number_base + this.attack_number_grop * grop_lv // + grop_star * this.attack_number_grop
     }
 
     start()
@@ -351,4 +364,26 @@ export default class HeroBase extends cc.Component implements CardModel
         cc.log("ERROR:Need to rewrite this method function name: HeroBase:on_die")
     }
 
+    // 狂风之力
+    addKuangFeng()
+    {
+
+        cc.Tween.caller
+
+        this.is_can_skill = false
+        cc.tween(this.node)
+        .delay(GAME.KuangFengData.cool_time)
+        .call((()=>{
+            this.attack_speed += 5 
+        }).bind(this))
+        .delay(GAME.KuangFengData.continue_time)
+        .call((()=>{
+            this.is_can_skill = true
+            this.attack_speed = this.attack_speed_base + this.attack_speed_grop *(this.lv_num) +  this.star_num * this.attack_speed_star
+        }).bind(this))
+        .union()
+        .repeatForever()
+        .tag(TagMg.KUANG_FNEG)
+        .start()
+    }
 }

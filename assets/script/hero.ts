@@ -10,6 +10,8 @@ const {ccclass, property} = cc._decorator;
 import { GAME } from "./GameDefine";
 import HeroBase from "./HeroBase"
 
+import {TagMg} from "./TagManger"
+
 
 @ccclass
 export default class hero extends HeroBase {
@@ -21,9 +23,11 @@ export default class hero extends HeroBase {
 
     // 是否可以攻击
     is_can_attack = true
+    // 技能是否可以用
+    // is_can_skill = true 
     
     // 攻击动作
-    attack_tag = 65432
+    attack_tag = TagMg.ATTACK_TAG
 
     @property({type:cc.Sprite, override:true})
     head_img:cc.Sprite = null;
@@ -32,6 +36,12 @@ export default class hero extends HeroBase {
     lv_label:cc.Label = null;
 
     start() {
+        this.start_attack()
+    }
+
+    // 开始攻击
+    start_attack()
+    {
         cc.tween(this.node)
         .delay(0.05) // 攻速上限？(20次)
         .call(this.findEmety.bind(this))
@@ -41,16 +51,17 @@ export default class hero extends HeroBase {
         .start()
     }
 
+    // 设置map
     setMap(_map)
     {
         this.map = _map
     }
 
+    // 刷新ui
     refush()
     {
         this.lv_label.string = String(this.lv)
     }
-
 
     findEmety()
     {
@@ -65,31 +76,69 @@ export default class hero extends HeroBase {
         {
             case GAME.attack_type.NORMAL:
             {
-
                 break
             }
             
         }
-
-
+        let enemycount = this.attack_number
+        // 寻找攻击目标
         for(let i = 0; i < this.map.enemy_list.length; i++)
         {
             let temp = this.map.enemy_list[i]
             if(temp.getComponent("enemy").is_die == false)
             {
                 emety.push(temp)
-                break
+                enemycount--;
+                if(enemycount == 0)
+                {
+                    break
+                }
             }
         }
-        // if(emety && emety.getComponent("enemy").is_die == false)
-        // {
-        //     this.onAttack(emety)
-        // }
-        // else
-        // {
-        //     // this.node.stopActionByTag(this.attack_tag)
-        //     cc.Tween.stopAllByTag(this.attack_tag)
-        // }
+        emety.forEach((element => {
+            this.onAttack(element)
+        }));
+
+        if(this.attack_speed > 0 && emety.length > 0)
+        {
+            this.is_can_attack = false
+            cc.tween(this.node)
+            .delay(1/this.attack_speed)
+            .call(function(){
+                this.is_can_attack = true
+            }.bind(this))
+            .tag(123213)
+            .start()
+        }
+
+        if(this.is_can_skill)
+        {
+            // TagMg.SKILL_TAG
+            this.onSkill()
+        }
+    }
+
+    // 技能攻击
+    onSkill()
+    {   
+        let skill_id = this.skill[0]
+        switch(skill_id)
+        {   
+            // 狂风
+            case GAME.skill.BLAST:
+                {
+                    this.addKuangFeng()
+                    break
+                }
+            case GAME.skill.ICE: // 减速
+                {
+
+                    break
+                }
+
+
+
+        }
     }
 
     // 攻击
@@ -115,21 +164,8 @@ export default class hero extends HeroBase {
         data.hit_proba = this.attack_crit // 暴击率
         data.hit_target_count = this.attack_number // 攻击人数
         data.hit_damage = 0             // 先设置成0
-
-        this.is_can_attack = false
-        let self = this
-        if(this.attack_speed > 0)
-        {
-            cc.tween(this.node)
-            .delay(1/this.attack_speed)
-            .call(function(){
-                this.is_can_attack = true
-            }.bind(self))
-            .tag(123213)
-            .start()
-            // 本地发射子弹到对方
-            this.create_one_bullet(target, data)
-        }
+        // 本地发射子弹到对方
+        this.create_one_bullet(target, data)
     }
  
     create_one_bullet(target:cc.Node, hit_data:GAME.HitData)

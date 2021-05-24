@@ -3,10 +3,10 @@ import HeroBase from "./HeroBase"
 namespace GAME {
 
     export enum skill{  
-        ICE,        // 冰
-        FIRE,       // 火
-        POISON,
-        BLAST,      // 狂风
+        ICE,                // 冰
+        FIRE,               // 火
+        POISON,             // 毒
+        BLAST = 9002,       // 狂风
     }
     // 攻击类型
     export enum attack_type{
@@ -42,6 +42,11 @@ namespace GAME {
         
         
         // spark_type:number            // 攻击特效
+    }
+
+    export const KuangFengData = {
+        continue_time:5,                // 持续时间
+        cool_time:15                    // 冷却时间
     }
 
 
