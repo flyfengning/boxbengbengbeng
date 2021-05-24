@@ -318,6 +318,7 @@ export default class HeroBase extends cc.Component implements CardModel
 
         hit_data.hit_damage = hit_number
 
+
         if(this.blood < 0)
         {
             this.on_die_base()

@@ -50,6 +50,7 @@ export default class enemy extends HeroBase {
         tips.parent = this.node
         tips.getComponent(cc.Label).string = hit_data.hit_damage + ""
 
+        // 暴击
         tips.color = hit_data.is_crit == false?cc.color(255, 255, 255):cc.color(255, 0, 0)
         if(hit_data.is_crit)
         {

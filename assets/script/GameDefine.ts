@@ -1,27 +1,28 @@
 import HeroBase from "./HeroBase"
 
 namespace GAME {
-    export enum skill{
-        ice,
-        fire,
-        poison,     //毒
 
+    export enum skill{  
+        ICE,        // 冰
+        FIRE,       // 火
+        POISON,
+        BLAST,      // 狂风
     }
+    // 攻击类型
     export enum attack_type{
         NORMAL,             // 普通
-        Trigger_skill,      // 触发技能
-        Proba_percentage,   // 概率百分比
-        Proba_attack,       // 暴击
-        Proba_kill,         // 概率击杀
-        Superimpose,        // 叠加攻击(累计)
+        TRIGGER_SKILL,      // 触发技能
+        PROBA_PERCENTAGE,   // 概率百分比
+        PROBA_KILL,         // 概率击杀
+        SUPERIMPOSE,        // 叠加攻击(累计)
     }
     
     // 攻击特效
     export enum attack_spark_type
     {
         NORMAL,
-        sustained,          // 多人攻击
-        // Proba_attack,       // 暴击
+        // BLAST, 
+
     }
 
     export const max_attack_crit:number = 10000  // 常量可以导出
