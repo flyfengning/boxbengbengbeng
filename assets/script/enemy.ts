@@ -36,14 +36,14 @@ export default class enemy extends HeroBase {
 
     start() {
         //血量
-        this.blood_volume.string = String(this.blood)
+        this.blood_volume.string = Math.floor(this.blood) + ""
     }
 
     on_show_hit(hit_data:GAME.HitData){
 
         // GAME.attack_spark_type
         // 基类算数值
-        this.blood_volume.string = String(this.blood)
+        this.blood_volume.string = Math.floor(this.blood) + ""
 
         let tips = cc.instantiate(this.tips_num)
         tips.active = true
@@ -57,6 +57,8 @@ export default class enemy extends HeroBase {
             tips.scale = 1.5
             tips.getComponent(cc.Label).enableBold = true
         }
+
+        this.map.count_hit(hit_data)
 
         tips.x = this.node.width / 3 * (-1) + Math.floor(Math.random() * 100 %(this.node.width/3*2)) 
         tips.y = 24
@@ -84,7 +86,7 @@ export default class enemy extends HeroBase {
 
     refush()
     {
-        this.blood_volume.string = String(this.blood)
+        this.blood_volume.string =  Math.floor(this.blood) + ''
     }
 
     move(p1:cc.Vec2, p2:cc.Vec2, callBack:Function)

@@ -2,6 +2,10 @@ import HeroBase from "./HeroBase"
 
 namespace GAME {
 
+    export const start_gold = 10
+
+    export const genter_gold = 10
+
     export enum skill{  
         ICE,                // 冰
         FIRE,               // 火
@@ -40,7 +44,6 @@ namespace GAME {
 
         hit_damage:number               // 受击伤害（计算之后血量减少的数值） 
         
-        
         // spark_type:number            // 攻击特效
     }
 
@@ -50,6 +53,11 @@ namespace GAME {
     }
 
 
+    export interface HitCountData{
+        target_attack:Map<number, number>   // 根据id统计伤害
+        all_attack:number                   // 总伤害
+        crit_count:number                   // 暴击次数
+    }
 
 
 

@@ -325,7 +325,7 @@ export default class HeroBase extends cc.Component implements CardModel
         }
 
         hit_number -= this.defense
-        hit_number = hit_number < 0? 0 : hit_number
+        hit_number = hit_number <= 0? 1 : hit_number
 
         this.blood -= hit_number
 
@@ -367,9 +367,6 @@ export default class HeroBase extends cc.Component implements CardModel
     // 狂风之力
     addKuangFeng()
     {
-
-        cc.Tween.caller
-
         this.is_can_skill = false
         cc.tween(this.node)
         .delay(GAME.KuangFengData.cool_time)

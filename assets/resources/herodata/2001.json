@@ -5,9 +5,9 @@
     "attack": 100,
     "defense": 0,
     "attack_speed": 1,
-    "attack_crit": 5000,
+    "attack_crit": 600,
     "move_speed": 0,
-    "skill": [9002],
+    "skill": [],
     "attack_type": 0,
     "attack_spark": 0,
     "attack_targets": 0,
@@ -17,8 +17,8 @@
     "blood_grow": 1,
     "attack_grow": 100,
     "defense_grow": 0,
-    "attack_speed_grop": 1,
-    "attack_crit_grop": 25,
+    "attack_speed_grop": 2,
+    "attack_crit_grop": 250,
     "attack_targets_grop": 0,
     "attack_effnum_grop": 0
 }

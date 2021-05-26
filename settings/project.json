@@ -13,14 +13,14 @@
   "preview-port": 7456,
   "design-resolution-width": 640,
   "design-resolution-height": 960,
-  "fit-width": true,
+  "fit-width": false,
   "fit-height": true,
   "use-project-simulator-setting": true,
   "simulator-orientation": false,
   "use-customize-simulator": false,
   "simulator-resolution": {
-    "height": 1334,
-    "width": 750
+    "height": 1136,
+    "width": 640
   },
   "clear-simulator-cache": true,
   "facebook": {

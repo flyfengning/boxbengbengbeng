@@ -6,6 +6,10 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
+import { GAME } from "./GameDefine";
+import Player from "./Player"
+
+
 
 @ccclass
 export default class NewClass extends cc.Component {
@@ -44,8 +48,8 @@ export default class NewClass extends cc.Component {
     select_index:number = -1
 
     // 英雄取值范围
-    public hero_range:Array<number> = [2001]
-    // 英雄列表(@注意不是顺序的，中间有空的)
+    public hero_range:Array<number> = Player.getInstance().fight_hero
+    // 英雄node列表(@注意不是顺序的，中间有空的)
     public hero_list:Array<cc.Node> = []
     // 怪物列表
     public enemy_list:Array<cc.Node> = []
@@ -57,15 +61,20 @@ export default class NewClass extends cc.Component {
     public timeCount:number = 0;
     // 波数(对于怪物来说这是lv)
     public group_count:number = 0
-
+    // 伤害统计
+    public HitCountData:GAME.HitCountData = {
+        target_attack:new Map(),
+        all_attack:0,
+        crit_count:0
+    }
     // 总金币数
-    _gold_num:number = 100000
+    _gold_num:number = GAME.start_gold
     // 生成所需要数
-    _genner_num:number = 10
+    _genner_num:number = GAME.genter_gold
     //生成之后增加的金币数
     _genner_add_num:number = 10
     // 每个敌人(小怪)多少钱
-    _enemy_s_gold = 1000
+    _enemy_s_gold = 10
     // 每个敌人(精英)多少钱
     _enemy_m_gold = 10    
     // 每个敌人(boss)多少钱
@@ -115,14 +124,9 @@ export default class NewClass extends cc.Component {
                 cc.log("----------------加载完毕node/nodes")
             }
         }).bind(this))
-
-        // this.hero_range.push(2001)
-        // this.hero_range.push(2002)
-        // this.hero_range.push(2003)
-        // this.hero_range.push(2004)
         this.init_map()
-        this.gold_num = 1000
-        this.start_emety()
+  
+        this.reset_game()
     }
 
     init_map()
@@ -165,8 +169,6 @@ export default class NewClass extends cc.Component {
                 this.add_gold_num(this._genner_num * -1)
                 this.genner_num += this._genner_add_num
             }
-
-
         }).bind(this))
     }
 
@@ -207,39 +209,57 @@ export default class NewClass extends cc.Component {
         return pos
     }
 
+    set_group_label()
+    {
+        this.group_label.string = "第" + this.group_count + "波"
+    }
+
     // 生成一波怪物
     addListEnemy()
     {
-        // let list:Array<number> = [1001, 1002, 1003, 1004, 1005]
-        let list:Array<number> = [1001]
+        let list:Array<number> = [1001, 1002, 1003, 1004, 1005]
+        let bigBoss:Array<number> =  [9001]
+        // let list:Array<number> = [1001]
         // 当前的波数
         this.group_count ++;
+        this.set_group_label()  
 
-        this.group_label.string = "第" + this.group_count + "波"
 
-        // if(this.group_count >= 10)
-        // {   
-        //     // 超过10层， 超过的波数每5波增加数量1
-        //     for(let i = 0; i < this.group_count/5-1; i++)
-        //     {
-        //         let index = Math.floor(Math.random() * 100) % 5
-        //         list.push(list[index]) 
-        //     }
-        // }
+        if(this.group_count >= 10)
+        {   
+            // 超过10层， 超过的波数每5波增加数量1
+            for(let i = 0; i < this.group_count/5-1; i++)
+            {
+                let index = Math.floor(Math.random() * 100) % 5
+                list.push(list[index]) 
+            }
+        }
 
         cc.log("list.length", list.length)
 
         let pos:cc.Vec2 = this.getBeginPos()
         let temp = []
-        for(let i = 0; i < list.length; i++)
+        if(this.group_count % 10 == 2)
         {
-            let node = this.addOneEnemy(list[i], pos)
-            temp.push(node)
+            for(let i = 0; i < bigBoss.length; i++)
+            {
+                let node = this.addOneEnemy(bigBoss[i], pos)
+                temp.push(node)
+            }
         }
+        else
+        {
+            for(let i = 0; i < list.length; i++)
+            {
+                let node = this.addOneEnemy(list[i], pos)
+                temp.push(node)
+            }
+        }
+
         // 开始移动到终点
         this.sequence_move(temp)
     }
-
+    // 添加一个怪物
     addOneEnemy(id:number, pos?:cc.Vec3|cc.Vec2):cc.Node
     {
         let emety1 = cc.instantiate(this.emety)
@@ -256,6 +276,22 @@ export default class NewClass extends cc.Component {
         return emety1
     }
 
+    count_hit(HitData:GAME.HitData)
+    {
+        if (!this.HitCountData.target_attack.get(HitData.target.id))
+        {
+            this.HitCountData.target_attack.set(HitData.target.id, HitData.hit_damage)
+        }
+        else
+        {
+            let num = this.HitCountData.target_attack.get(HitData.target.id) + HitData.hit_damage
+            this.HitCountData.target_attack.set(HitData.target.id, num)
+        }
+        
+        this.HitCountData.all_attack += HitData.hit_damage
+        this.HitCountData.crit_count += HitData.is_crit?1:0
+    }
+
     sequence_move(temp_list)
     {
         temp_list.forEach((emety, index) => {
@@ -269,6 +305,7 @@ export default class NewClass extends cc.Component {
                 let p1 = this.map_list[nowIndex].getPosition()
                 let p2 = this.map_list[++nowIndex].getPosition()
 
+                sc.is_die = true
                 node.scale = 0.5
                 let getNext = (()=>{
                     let tempindex = nowIndex + 1
@@ -283,12 +320,13 @@ export default class NewClass extends cc.Component {
                     sc.move(p1, p2, getNext)
                 }).bind(this)
             
-                cc.tween(node).delay((idx)*1.3).call(()=>{
+                cc.tween(node).delay((idx)*1.5).call(()=>{
+                    sc.is_die = false
                     // 显示出来
                     node.active = true
-                    cc.tween(node).to(0.2, {scale:0.8}).start()  //缩放效果
                     sc.move(p1, p2, getNext)
-                }).start()
+                }).to(0.2, {scale:0.8})
+                .start()
             }
             else
             {
@@ -309,6 +347,11 @@ export default class NewClass extends cc.Component {
     addOneHero(id:number, index:number, lv:number = 1)
     {
         let hero = cc.instantiate(this.hero) 
+
+        hero.scale = 0.2
+
+        cc.tween(hero).to(0.2,{scale:1}).start()
+
         hero.parent = this.map_bg.node
         let sc1 = hero.getComponent("hero")
         // hero.active = false
@@ -405,7 +448,7 @@ export default class NewClass extends cc.Component {
         let id1 = node1.getComponent("hero").id
         let id2 = node2.getComponent("hero").id
 
-        if(lv1 == lv2)
+        if(lv1 == lv2 && id1 == id2)
         {
             this.hero_list[index1] = null
             node1.removeFromParent()
@@ -423,7 +466,7 @@ export default class NewClass extends cc.Component {
         }
         else // tips 提示
         {
-            cc.log("-----------合成失败")
+            cc.log("-----------合成失败, 合成需要等级相同和id相同")
             return false
         }
     }
@@ -467,11 +510,59 @@ export default class NewClass extends cc.Component {
         this.showResult()
     }
 
+    // 重新开始游戏
+    reset_game()
+    {
+        this.group_count = 1
+        this.set_group_label()
+        // 清空所有的炮台
+        this.enemy_list.forEach((enemy, index)=>{
+            enemy.destroy()
+        })
+        this.enemy_list = []
+
+        this.hero_list.forEach((hero, index)=>{
+            if (hero)
+            {
+                hero.destroy()
+            }
+            else
+            {
+                cc.log('没有找到hero', index)
+            }
+        })
+        this.hero_list = []
+        // 开始出兵
+        this.start_emety()
+
+        // 初始化生成金币
+        this.genner_num = GAME.genter_gold 
+        // 初始化金币
+        this.gold_num = GAME.start_gold
+
+        this.resetCountData()
+    }
+
+    // 清空本局统计    
+    resetCountData()
+    {
+        this.HitCountData.all_attack = 0
+        this.HitCountData.crit_count = 0
+        this.HitCountData.target_attack = new Map()
+    }
+
     showResult()
     {
         this.result_bg.node.active = true
         let result = this.result_bg.getComponent("Result")
 
+        // result
+        result.btn_again.node.on(cc.Node.EventType.TOUCH_END, (()=>{
+            this.result_bg.node.active = false
+            this.reset_game()
+        }).bind(this))
+
+        result.score.string = Math.floor(this.HitCountData.all_attack) + ""
     }
 
     // update (dt) {}
