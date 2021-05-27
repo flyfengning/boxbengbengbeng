@@ -8,6 +8,7 @@
 const {ccclass, property} = cc._decorator;
 import {CardModel} from "./CardModel"
 import {GAME} from './GameDefine'
+import Tips from "./Tips"
 
 // 类型
 enum UITYPE_ENUM{
@@ -74,8 +75,16 @@ export default class NewClass extends cc.Component {
     @property(cc.Button)
     btn_load:cc.Button = null
 
-    card_def: CardModel = this.resetData()
+    @property(cc.Button)
+    btn_gogame:cc.Button = null
 
+    @property(cc.Button)
+    btn_count:cc.Button = null
+
+    @property(cc.Layout)
+    btn_count_layer:cc.Layout = null
+
+    card_def: CardModel = this.resetData()
 
     write_path:string = "E:/flytest/box_beng/assets/resources/herodata/"
 
@@ -256,9 +265,6 @@ export default class NewClass extends cc.Component {
 
     input_node_list = []
     
-  
-
-
     addEditPanel()
     {
        // 
@@ -320,17 +326,37 @@ export default class NewClass extends cc.Component {
     start () {
         this.addEditPanel()
 
+        this.btn_count_layer.node.active = false
         this.btn_load.node.on(cc.Node.EventType.TOUCH_END, this.loadFile, this)
         this.btn_save.node.on(cc.Node.EventType.TOUCH_END, this.onSave, this)
         this.btn_clean.node.on(cc.Node.EventType.TOUCH_END, this.onclean, this)
+        this.btn_gogame.node.on(cc.Node.EventType.TOUCH_END, this.onGoGame, this)
+        this.btn_count.node.on(cc.Node.EventType.TOUCH_END, this.inCount, this)
     }
+
+    onGoGame()
+    {
+        cc.director.loadScene("FightScene")
+    }
+
+    inCount()
+    {
+        this.btn_count_layer.node.active = true
+    }
+
 
     loadFile()
     {
+        if(cc.sys.os != cc.sys.OS_WINDOWS)
+        {   
+            Tips.showTips("不能加载非win32 当前平台" + cc.sys.os)
+            return
+        }
+        
         let id = this.card_def.id
         if(id == 0)
         {
-            cc.log("需要加载的文件的id为0")
+            Tips.showTips("需要加载的文件的id为0")
             return 
         }
         
@@ -340,7 +366,7 @@ export default class NewClass extends cc.Component {
 
             if(!this.card_def.id)
             {
-                cc.log("没有设置ID")
+                Tips.showTips("没有设置ID")
                 return
             }
             let path = this.write_path
@@ -365,16 +391,19 @@ export default class NewClass extends cc.Component {
             {
                 // 没有
                 cc.log("没有加载到文件")
+                Tips.showTips("没有加载到文件")
             }
         }
         else
         {
+            Tips.showTips("没有jsb 浏览器暂时不支持 jsb")
             cc.log("-----------------------------没有jsb 浏览器暂时不支持 jsb")
         }
     }
 
     onSave()
     {
+
         if(jsb)
         {   
             let fileUtils = jsb.fileUtils
@@ -395,6 +424,7 @@ export default class NewClass extends cc.Component {
             cc.log("this.card_def", this.card_def)
 
             cc.log(fileName, "---->>>>>>开始保存")
+            Tips.showTips("---->>>>>>开始保存" + fileName)
 
             // if (fileUtils.isFileExist(fileName))
             // {
@@ -405,10 +435,12 @@ export default class NewClass extends cc.Component {
             fileUtils.writeStringToFile(str, fileName)
 
             cc.log(fileName, "----->>>>>>保存完成")
+            Tips.showTips("---->>>>>>保存完成" + fileName)
             // }
         }
         else
         {
+            Tips.showTips('-----------------------------没有jsb 浏览器暂时不支持 jsb')
             cc.log("-----------------------------没有jsb 浏览器暂时不支持 jsb")
         }
     }
