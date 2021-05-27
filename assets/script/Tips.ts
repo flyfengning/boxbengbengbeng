@@ -23,17 +23,35 @@ export default class NewClass extends cc.Component {
         return this.label.string
     }
 
+    static showTips(txt:string)
+    {
+        cc.resources.load('Prefab/tips', cc.Prefab, (function(error, tipsprefab){
+            if (tipsprefab)
+            {
+                let tips:cc.Node = cc.instantiate(tipsprefab)
+                tips.parent = cc.director.getScene()
+                let label = tips.getComponent("Tips")
+                label.string = txt
+                tips.x = cc.winSize.width/2
+                tips.y = cc.winSize.height/4*3
+                tips.zIndex = 10
+            }
+        }).bind(this))
+    }
+
     start () {
-        this.node.active = false
+        // this.node.active = false
         this.node.setScale(0.5)
         cc.tween(this.node)
             .show()
-            .to(0.2, {scale:1})
+            .to(0.1, {scale:1})
             .delay(0.5)
-            .by(1, {
-                y:100,
-                opacity:100
+            .by(0.4, {
+                y:150,
+                opacity:-100
             })
+            // .delay(0.2)
+            // .by(0.1, {scale:-0.5, opacity:-122})
             .removeSelf()
             .start()
     }

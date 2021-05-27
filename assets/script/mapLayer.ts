@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 import { GAME } from "./GameDefine";
 import Player from "./Player"
-
+import Tips from "./Tips"
 
 
 @ccclass
@@ -56,7 +56,7 @@ export default class NewClass extends cc.Component {
     // 地图块列表
     public map_list:Array<cc.Node> = []
     // 间隔时间
-    public interval_time:number = 20
+    public interval_time:number = 30
     // 现在统计的时间
     public timeCount:number = 0;
     // 波数(对于怪物来说这是lv)
@@ -117,6 +117,8 @@ export default class NewClass extends cc.Component {
 
     sp_Atlas:cc.SpriteAtlas = null
     start () {
+        this.node.height = cc.winSize.height
+        this.node.width = cc.winSize.width
         cc.resources.load("node/node", cc.SpriteAtlas, ((error, sp_atlas)=>{
             if(!error)
             {
@@ -147,6 +149,7 @@ export default class NewClass extends cc.Component {
             if(this.gold_num < this.genner_num )
             {
                 cc.log("金币不足")
+                Tips.showTips("金币不足")
                 return
             }
             let index = Math.floor(Math.random()*100 % this.hero_range.length)
@@ -235,11 +238,10 @@ export default class NewClass extends cc.Component {
             }
         }
 
-        cc.log("list.length", list.length)
-
         let pos:cc.Vec2 = this.getBeginPos()
         let temp = []
-        if(this.group_count % 10 == 2)
+        //
+        if(this.group_count % 10 == 0)
         {
             for(let i = 0; i < bigBoss.length; i++)
             {
@@ -513,7 +515,7 @@ export default class NewClass extends cc.Component {
     // 重新开始游戏
     reset_game()
     {
-        this.group_count = 1
+        this.group_count = 0
         this.set_group_label()
         // 清空所有的炮台
         this.enemy_list.forEach((enemy, index)=>{
@@ -528,7 +530,8 @@ export default class NewClass extends cc.Component {
             }
             else
             {
-                cc.log('没有找到hero', index)
+                // cc.log('没有找到hero', index)
+                Tips.showTips('没有找到hero id:' + index)
             }
         })
         this.hero_list = []

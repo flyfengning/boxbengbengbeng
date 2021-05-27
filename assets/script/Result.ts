@@ -19,12 +19,14 @@ export default class NewClass extends cc.Component {
     @property(cc.Sprite)
     sp_light: cc.Sprite = null;
 
-
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {}
+    @property(cc.Layout)
+    bg: cc.Layout = null;
+    
 
     start () {
+        let node  = this.bg.node
+        node.width = cc.winSize.width
+        node.height = cc.winSize.height
         cc.tween(this.sp_light.node)
             .by(1, {angle:90})
             .repeatForever()

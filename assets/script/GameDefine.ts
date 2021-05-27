@@ -2,10 +2,12 @@ import HeroBase from "./HeroBase"
 
 namespace GAME {
 
+    // 初始拥有金币
     export const start_gold = 10
-
+    // 生成初始金币
     export const genter_gold = 10
 
+    // 技能
     export enum skill{  
         ICE,                // 冰
         FIRE,               // 火
@@ -29,9 +31,8 @@ namespace GAME {
 
     }
 
-    export const max_attack_crit:number = 10000  // 常量可以导出
-    export const min_attack_crit:number = 0  // 常量可以导出
-
+    export const max_attack_crit:number = 10000     // 暴击最大概率
+    export const min_attack_crit:number = 0         // 暴击最小概率
 
     // 受击属性
     export interface HitData{
@@ -47,18 +48,19 @@ namespace GAME {
         // spark_type:number            // 攻击特效
     }
 
+    // 狂风之力技能 配置信息
     export const KuangFengData = {
         continue_time:5,                // 持续时间
         cool_time:15                    // 冷却时间
     }
 
-
+    // 上海统计
     export interface HitCountData{
         target_attack:Map<number, number>   // 根据id统计伤害
         all_attack:number                   // 总伤害
         crit_count:number                   // 暴击次数
     }
-
+    
 
 
 

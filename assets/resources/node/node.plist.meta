@@ -8,9 +8,9 @@
   },
   "type": "Texture Packer",
   "subMetas": {
-    "enemy_9001.png": {
+    "fight_9001.png": {
       "ver": "1.0.4",
-      "uuid": "c3b6e5ee-7e6d-4a77-8bcb-390cae66c206",
+      "uuid": "c4528b5a-f4dd-42af-a587-c0089e0eadd5",
       "rawTextureUuid": "dce3c52d-7307-41a5-a76f-cbe06be40168",
       "trimType": "auto",
       "trimThreshold": 1,
@@ -30,9 +30,9 @@
       "spriteType": "normal",
       "subMetas": {}
     },
-    "enemy_9002.png": {
+    "fight_9002.png": {
       "ver": "1.0.4",
-      "uuid": "54b4b26b-f6d4-41cf-9085-a48bd35041dd",
+      "uuid": "c63c2dc5-afd6-4287-ac2f-98bc121383f0",
       "rawTextureUuid": "dce3c52d-7307-41a5-a76f-cbe06be40168",
       "trimType": "auto",
       "trimThreshold": 1,
