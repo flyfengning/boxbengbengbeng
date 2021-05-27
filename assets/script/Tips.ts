@@ -45,7 +45,7 @@ export default class NewClass extends cc.Component {
         cc.tween(this.node)
             .show()
             .to(0.1, {scale:1})
-            .delay(0.5)
+            .delay(0.8)
             .by(0.4, {
                 y:150,
                 opacity:-100

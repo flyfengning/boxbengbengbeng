@@ -60,10 +60,8 @@ namespace GAME {
         all_attack:number                   // 总伤害
         crit_count:number                   // 暴击次数
     }
-    
 
-
-
+    export const map_bigboss_group = 10
 
 }
 

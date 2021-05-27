@@ -240,8 +240,9 @@ export default class NewClass extends cc.Component {
 
         let pos:cc.Vec2 = this.getBeginPos()
         let temp = []
-        //
-        if(this.group_count % 10 == 0)
+
+        // 大boss出现的时机
+        if(this.group_count % GAME.map_bigboss_group == 0)
         {
             for(let i = 0; i < bigBoss.length; i++)
             {
@@ -349,11 +350,8 @@ export default class NewClass extends cc.Component {
     addOneHero(id:number, index:number, lv:number = 1)
     {
         let hero = cc.instantiate(this.hero) 
-
         hero.scale = 0.2
-
         cc.tween(hero).to(0.2,{scale:1}).start()
-
         hero.parent = this.map_bg.node
         let sc1 = hero.getComponent("hero")
         // hero.active = false
@@ -468,7 +466,15 @@ export default class NewClass extends cc.Component {
         }
         else // tips 提示
         {
-            cc.log("-----------合成失败, 合成需要等级相同和id相同")
+            // cc.log("-----------合成失败, 合成需要等级相同和id相同")
+            if(id1 != id2)
+            {
+                Tips.showTips("合成需要两个同类型的英雄")
+            }
+            else if (lv1 != lv2)
+            {
+                Tips.showTips("合成需要两个同等级的英雄")
+            }
             return false
         }
     }
