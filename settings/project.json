@@ -10,7 +10,6 @@
   "excluded-modules": [
     "3D Physics/Builtin"
   ],
-  "preview-port": 7456,
   "design-resolution-width": 640,
   "design-resolution-height": 960,
   "fit-width": false,
@@ -22,17 +21,6 @@
     "height": 1136,
     "width": 640
   },
-  "clear-simulator-cache": true,
-  "facebook": {
-    "appID": "",
-    "audience": {
-      "enable": false
-    },
-    "enable": false,
-    "live": {
-      "enable": false
-    }
-  },
   "start-scene": "13c01d44-b942-470a-a1f2-c572a6c204fd",
-  "last-module-event-record-time": 1621581175655
+  "last-module-event-record-time": 1622171606226
 }

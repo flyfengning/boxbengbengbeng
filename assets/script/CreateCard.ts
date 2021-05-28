@@ -47,7 +47,6 @@ const key:Array<string> = [
    "event_attack_effnum_grop",
 ]
 
-
 const UI_EVENT_TYPE:Map<string, string> = new Map()
 
 for(let i = 0; i < key.length; i++)
@@ -123,7 +122,7 @@ export default class NewClass extends cc.Component {
     {
         this.addEvent()
     }
-
+ 
     addEvent()
     {
         for(let i = 0; i < key.length; i++)
