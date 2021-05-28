@@ -3,7 +3,7 @@
     "id": 1005,
     "blood": 80,
     "attack": 0,
-    "defense": 40,
+    "defense": 10,
     "attack_speed": 0,
     "attack_crit": 0,
     "move_speed": 30,

@@ -2993,10 +2993,14 @@
       "__id__": 12
     },
     "btn_gogame": {
+      "__id__": 33
+    },
+    "btn_count": {
       "__id__": 40
     },
-    "btn_count": null,
-    "btn_count_layer": null,
+    "btn_count_layer": {
+      "__id__": 57
+    },
     "_id": "3am+V4dHZKC6SEJ8Grcp2z"
   },
   {

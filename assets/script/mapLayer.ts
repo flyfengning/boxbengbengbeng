@@ -537,7 +537,7 @@ export default class NewClass extends cc.Component {
             else
             {
                 // cc.log('没有找到hero', index)
-                Tips.showTips('没有找到hero id:' + index)
+                // Tips.showTips('没有找到hero id:' + index)
             }
         })
         this.hero_list = []
